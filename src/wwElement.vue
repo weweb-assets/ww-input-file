@@ -69,6 +69,7 @@ export default {
         handleManualInput(value) {
             if (value === this.localValue) return;
             const file = this.$refs['inputFile'].files[0];
+            if (!file) return;
             this.localValue = value;
             this.fileName = file.name;
             this.setValue(file);
