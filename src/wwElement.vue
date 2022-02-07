@@ -1,10 +1,5 @@
 <template>
     <div class="ww-input-file" @click="openFileExplorer">
-        <!-- wwEditor:start -->
-        <div v-if="isEditing" class="ww-input-file__icon">
-            <wwEditorIcon small name="files" @mouseenter="isHover = true" @mouseleave="isHover = false"></wwEditorIcon>
-        </div>
-        <!-- wwEditor:end -->
         <wwElement class="ww-input-file__button" v-bind="content.button" />
         <wwElement
             class="ww-input-file__text"
@@ -88,25 +83,6 @@ export default {
     display: flex;
     align-items: center;
     width: 100%;
-    /* wwEditor:start */
-    &__icon {
-        pointer-events: auto;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: 0;
-        z-index: 11;
-        padding: var(--ww-spacing-01);
-        color: var(--ww-color-white);
-        border-radius: 100%;
-        background-color: var(--ww-color-blue-500);
-        transform: translate(-50%, -50%);
-        transition: transform 0.3s ease;
-    }
-    &:hover &__icon {
-        opacity: 1;
-    }
-    /* wwEditor:end */
     &__input {
         width: 0;
         pointer-events: none;

@@ -1,6 +1,9 @@
 export default {
     editor: {
         label: { en: 'Input File', fr: 'Entrée de fichier' },
+        bubble: {
+            icon: 'files',
+        },
     },
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' } },
