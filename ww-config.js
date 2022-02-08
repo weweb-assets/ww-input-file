@@ -1,6 +1,7 @@
 export default {
     editor: {
         label: { en: 'Input File', fr: 'Entrée de fichier' },
+        icon: 'files',
         bubble: {
             icon: 'files',
         },
