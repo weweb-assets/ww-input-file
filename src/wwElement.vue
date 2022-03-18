@@ -30,15 +30,22 @@ export default {
     },
     emits: ['trigger-event'],
     setup(props) {
-        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable(
-            props.uid,
-            'value',
-            props.content.value,
-            'element',
-            'file'
-        );
+        const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'value',
+            defaultValue: props.content.value,
+            componentType: 'element',
+            type: 'file'
+        });
 
-        wwLib.wwVariable.useComponentVariable(props.uid, 'progress', props.content.progress, 'element', 'number');
+        wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'progress',
+            defaultValue: props.content.progress,
+            componentType: 'element',
+            type: 'number',
+            readonly: true
+        });
 
         return { variableValue, setValue };
     },
