@@ -70,8 +70,8 @@ export default {
         },
     },
     watch: {
-        variableValue() {
-            this.localValue = null;
+        variableValue(newValue) {
+            this.localValue = newValue;
             this.fileName = null;
         },
     },
