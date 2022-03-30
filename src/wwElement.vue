@@ -36,7 +36,8 @@ export default {
             defaultValue: props.content.value,
             componentType: 'element',
             type: 'file',
-            readonly: true
+            readonly: true,
+            resettable: true,
         });
 
         wwLib.wwVariable.useComponentVariable({
@@ -45,7 +46,7 @@ export default {
             defaultValue: props.content.progress,
             componentType: 'element',
             type: 'number',
-            readonly: true
+            readonly: true,
         });
 
         return { variableValue, setValue };
@@ -66,6 +67,12 @@ export default {
         },
         value() {
             return this.variableValue;
+        },
+    },
+    watch: {
+        'content.value'() {
+            this.localValue = null;
+            this.fileName = null;
         },
     },
     methods: {
