@@ -33,7 +33,7 @@ export default {
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
             name: 'value',
-            defaultValue: props.content.value,
+            defaultValue: null,
             componentType: 'element',
             type: 'file',
             readonly: true,
@@ -43,7 +43,7 @@ export default {
         wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
             name: 'progress',
-            defaultValue: props.content.progress,
+            defaultValue: 0,
             componentType: 'element',
             type: 'number',
             readonly: true,
@@ -70,7 +70,7 @@ export default {
         },
     },
     watch: {
-        'content.value'() {
+        variableValue() {
             this.localValue = null;
             this.fileName = null;
         },
