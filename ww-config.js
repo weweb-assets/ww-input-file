@@ -11,17 +11,6 @@ export default {
         { name: 'initValueChange', label: { en: 'On init value change' }, event: { value: '' } },
     ],
     properties: {
-        value: {
-            section: 'settings',
-            bindable: true,
-            defaultValue: null,
-            hidden: true,
-        },
-        progress: {
-            type: 'Number',
-            defaultValue: 0,
-            hidden: true,
-        },
         button: {
             defaultValue: { isWwObject: true, type: 'ww-button' },
             hidden: true,
