@@ -71,11 +71,29 @@ export default {
             return this.variableValue;
         },
         accept() {
-            return this.content.accept === 'ANY'
-                ? ''
-                : this.content.accept === 'CUSTOM'
-                ? this.content.acceptCustom
-                : this.content.accept;
+            switch (this.content.accept) {
+                case 'image':
+                    return 'image/*';
+                case 'video':
+                    return 'video/*';
+                case 'audio':
+                    return 'audio/*';
+                case 'pdf':
+                    return '.pdf';
+                case 'csv':
+                    return '.csv';
+                case 'excel':
+                    return '.xls,.xlsb,.xlsm,.xlsx';
+                case 'word':
+                    return '.doc,.docm,.docx';
+                case 'json':
+                    return '.json';
+                case 'custom':
+                    return this.content.acceptCustom;
+                case 'any':
+                default:
+                    return '';
+            }
         },
     },
     watch: {
