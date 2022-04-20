@@ -111,7 +111,7 @@ export default {
             const files = this.$refs['inputFile'].files;
             if (!files || !files.length) return;
             this.localValue = value;
-            this.fileName = files.map(file => file.name).join(', ');
+            this.fileName = files.length > 1 ? `${files.length} files` : files[0].name;
             this.setValue(isMultiple ? files : files[0]);
             this.$emit('trigger-event', { name: 'change', event: { value: isMultiple ? files : files[0] } });
         },
