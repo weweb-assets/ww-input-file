@@ -108,7 +108,7 @@ export default {
         handleManualInput(value) {
             if (value === this.localValue) return;
             const isMultiple = this.content.multiple;
-            const files = this.content.this.$refs['inputFile'].files;
+            const files = this.$refs['inputFile'].files;
             if (!files || !files.length) return;
             this.localValue = value;
             this.fileName = files.map(file => file.name).join(', ');
