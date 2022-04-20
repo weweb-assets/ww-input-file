@@ -13,6 +13,7 @@
             type="file"
             :name="wwElementState.name"
             :required="content.required"
+            :multiple="content.multiple"
             @input="handleManualInput($event.target.value)"
         />
     </div>
