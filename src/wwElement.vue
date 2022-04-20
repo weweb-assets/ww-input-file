@@ -14,7 +14,7 @@
             :name="wwElementState.name"
             :required="content.required"
             :multiple="content.multiple"
-            :accept="content.accept"
+            :accept="accept"
             @input="handleManualInput($event.target.value)"
         />
     </div>
@@ -69,6 +69,13 @@ export default {
         },
         value() {
             return this.variableValue;
+        },
+        accept() {
+            return this.content.accept === 'ANY'
+                ? ''
+                : this.content.accept === 'CUSTOM'
+                ? this.content.acceptCustom
+                : this.content.accept;
         },
     },
     watch: {
