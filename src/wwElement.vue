@@ -81,12 +81,13 @@ export default {
     methods: {
         handleManualInput(value) {
             if (value === this.localValue) return;
-            const file = this.$refs['inputFile'].files[0];
-            if (!file) return;
+            const isMultiple = this.content.multiple;
+            const files = this.content.this.$refs['inputFile'].files;
+            if (!files || !files.length) return;
             this.localValue = value;
-            this.fileName = file.name;
-            this.setValue(file);
-            this.$emit('trigger-event', { name: 'change', event: { value: file } });
+            this.fileName = files.map(file => file.name).join(', ');
+            this.setValue(isMultiple ? files : files[0]);
+            this.$emit('trigger-event', { name: 'change', event: { value: isMultiple ? files : files[0] } });
         },
         openFileExplorer() {
             if (this.isEditing) return;
