@@ -14,6 +14,7 @@
             :name="wwElementState.name"
             :required="content.required"
             :multiple="content.multiple"
+            :accept="content.accept"
             @input="handleManualInput($event.target.value)"
         />
     </div>

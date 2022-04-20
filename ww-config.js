@@ -29,5 +29,22 @@ export default {
             section: 'settings',
             defaultValue: true,
         },
+        accept: {
+            label: 'Exts',
+            type: 'TextSelect',
+            options: {
+                options: [
+                    { label: 'Any', value: null },
+                    { label: 'Image', value: 'image/*', icon: 'assets' },
+                    { label: 'Video', value: 'video/*', icon: 'play' },
+                    { label: 'Audio', value: 'audio/*', icon: 'video' },
+                    { label: 'PDF', value: '.pdf' },
+                    { label: 'CSV', value: '.csv', icon: 'csv' },
+                    { label: 'Custom', value: 'CUSTOM' },
+                ],
+            },
+            section: 'settings',
+            defaultValue: null,
+        },
     },
 };
