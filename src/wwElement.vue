@@ -13,6 +13,8 @@
             type="file"
             :name="wwElementState.name"
             :required="content.required"
+            :multiple="content.multiple"
+            :accept="accept"
             @input="handleManualInput($event.target.value)"
         />
     </div>
@@ -68,6 +70,31 @@ export default {
         value() {
             return this.variableValue;
         },
+        accept() {
+            switch (this.content.accept) {
+                case 'image':
+                    return 'image/*';
+                case 'video':
+                    return 'video/*';
+                case 'audio':
+                    return 'audio/*';
+                case 'pdf':
+                    return '.pdf';
+                case 'csv':
+                    return '.csv';
+                case 'excel':
+                    return '.xls,.xlsb,.xlsm,.xlsx';
+                case 'word':
+                    return '.doc,.docm,.docx';
+                case 'json':
+                    return '.json';
+                case 'custom':
+                    return this.content.acceptCustom;
+                case 'any':
+                default:
+                    return '';
+            }
+        },
     },
     watch: {
         variableValue(newValue) {
@@ -80,12 +107,13 @@ export default {
     methods: {
         handleManualInput(value) {
             if (value === this.localValue) return;
-            const file = this.$refs['inputFile'].files[0];
-            if (!file) return;
+            const isMultiple = this.content.multiple;
+            const files = this.$refs['inputFile'].files;
+            if (!files || !files.length) return;
             this.localValue = value;
-            this.fileName = file.name;
-            this.setValue(file);
-            this.$emit('trigger-event', { name: 'change', event: { value: file } });
+            this.fileName = files.length > 1 ? `${files.length} files` : files[0].name;
+            this.setValue(isMultiple ? files : files[0]);
+            this.$emit('trigger-event', { name: 'change', event: { value: isMultiple ? files : files[0] } });
         },
         openFileExplorer() {
             if (this.isEditing) return;
