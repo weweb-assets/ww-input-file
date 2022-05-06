@@ -28,6 +28,7 @@ export default {
             type: 'OnOff',
             section: 'settings',
             defaultValue: true,
+            bindable: true
         },
         accept: {
             label: 'Extensions',
