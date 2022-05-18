@@ -15,7 +15,7 @@
             :required="content.required"
             :multiple="content.multiple"
             :accept="accept"
-            @input="handleManualInput($event.target.value)"
+            @input="handleManualInput($event)"
         />
     </div>
 </template>
@@ -105,7 +105,8 @@ export default {
         },
     },
     methods: {
-        handleManualInput(value) {
+        handleManualInput(event) {
+            const value = event.target.value;
             if (value === this.localValue) return;
             const isMultiple = this.content.multiple;
             const files = this.$refs['inputFile'].files;
@@ -113,7 +114,7 @@ export default {
             this.localValue = value;
             this.fileName = files.length > 1 ? `${files.length} files` : files[0].name;
             this.setValue(isMultiple ? files : files[0]);
-            this.$emit('trigger-event', { name: 'change', event: { value: isMultiple ? files : files[0] } });
+            this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: isMultiple ? files : files[0] } });
         },
         openFileExplorer() {
             if (this.isEditing) return;
