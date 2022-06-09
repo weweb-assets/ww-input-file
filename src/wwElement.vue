@@ -130,7 +130,8 @@ export default {
     align-items: center;
     width: 100%;
     &__input {
-        width: 0;
+        position: absolute;
+        opacity: 0;
         pointer-events: none;
     }
 }
