@@ -28,7 +28,13 @@ export default {
             type: 'OnOff',
             section: 'settings',
             defaultValue: true,
-            bindable: true
+            bindable: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip: 'A boolean that defines if the input is required: `true | false`',
+            },
+            /* wwEditor:end */
         },
         accept: {
             label: 'Extensions',
