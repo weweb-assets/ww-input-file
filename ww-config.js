@@ -1,8 +1,8 @@
 export default {
     editor: {
         label: 'Input File',
-        icon: 'files',
-        bubble: { icon: 'files' },
+        icon: 'upload',
+        bubble: { icon: 'upload' },
     },
     triggerEvents: [
         { name: 'change', label: { en: 'On change' }, event: { value: '' }, default: true },
