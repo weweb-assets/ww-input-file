@@ -13,6 +13,7 @@
             type="file"
             :name="wwElementState.name"
             :required="content.required"
+            :readonly="isReadonly"
             :multiple="content.multiple"
             :accept="accept"
             @input="handleManualInput($event)"
@@ -30,7 +31,7 @@ export default {
         uid: { type: String, required: true },
         wwElementState: { type: Object, required: true },
     },
-    emits: ['trigger-event'],
+    emits: ['trigger-event', 'add-state', 'remove-state'],
     setup(props) {
         const { value: variableValue, setValue } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
@@ -95,6 +96,16 @@ export default {
                     return '';
             }
         },
+        isReadonly() {
+            /* wwEditor:start */
+            if (this.wwEditorState.isSelected) {
+                return this.wwElementState.states.includes('readonly');
+            }
+            /* wwEditor:end */
+            return this.wwElementState.props.readonly === undefined
+                ? this.content.readonly
+                : this.wwElementState.props.readonly;
+        },
     },
     watch: {
         variableValue(newValue) {
@@ -102,6 +113,16 @@ export default {
                 this.localValue = null;
                 this.fileName = null;
             }
+        },
+        isReadonly: {
+            immediate: true,
+            handler(value) {
+                if (value) {
+                    this.$emit('add-state', 'readonly');
+                } else {
+                    this.$emit('remove-state', 'readonly');
+                }
+            },
         },
     },
     methods: {
@@ -114,10 +135,13 @@ export default {
             this.localValue = value;
             this.fileName = files.length > 1 ? `${files.length} files` : files[0].name;
             this.setValue(isMultiple ? files : files[0]);
-            this.$emit('trigger-event', { name: 'change', event: { domEvent: event, value: isMultiple ? files : files[0] } });
+            this.$emit('trigger-event', {
+                name: 'change',
+                event: { domEvent: event, value: isMultiple ? files : files[0] },
+            });
         },
         openFileExplorer() {
-            if (this.isEditing) return;
+            if (this.isEditing || this.isReadonly) return;
             this.$refs['inputFile'].click();
         },
     },
