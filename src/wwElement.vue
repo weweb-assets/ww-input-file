@@ -156,7 +156,7 @@ export default {
     &__input {
         position: absolute;
         opacity: 0;
-        pointer-events: none;
+        pointer-events: none !important;
     }
 }
 </style>
