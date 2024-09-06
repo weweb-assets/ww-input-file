@@ -1,5 +1,5 @@
 <template>
-    <div class="ww-input-file" @click="openFileExplorer">
+    <div class="ww-input-file" @click="openFileExplorer" :class="{ editing: isEditing }">
         <wwElement class="ww-input-file__button" v-bind="content.button" />
         <wwElement
             class="ww-input-file__text"
@@ -150,9 +150,9 @@ export default {
 
 <style lang="scss" scoped>
 .ww-input-file {
-    display: flex;
     align-items: center;
-    width: 100%;
+    position: relative;
+
     &__input {
         position: absolute;
         opacity: 0;
