@@ -290,11 +290,11 @@ export default {
             const items = event.dataTransfer.files;
             if (!items.length) return;
 
-            // Add a small delay after the drop animation completes before processing files
-            // This will make the file item animations look smoother
+            // Wait for the circle animation to complete before processing files
+            // This ensures a smooth transition from drop to file appearance
             setTimeout(async () => {
                 await processFiles(items);
-            }, 200);
+            }, 850); // Slightly longer than the animation to ensure it completes
         };
 
         const handleFileSelection = async event => {
@@ -371,6 +371,7 @@ export default {
             const limitedFiles = filesToProcess.slice(0, availableSlots);
             const processedFiles = [];
 
+            // Process all files first to get them ready
             for (const file of limitedFiles) {
                 const validationResult = validateFile(file, {
                     maxFileSize: maxFileSize.value,
@@ -428,14 +429,46 @@ export default {
             }
 
             if (processedFiles.length > 0) {
-                const newFiles = type.value === 'single' ? [...processedFiles] : [...files.value, ...processedFiles];
+                if (type.value === 'single') {
+                    // For single mode, just replace the files array
+                    setFiles(processedFiles);
+                    emit('trigger-event', {
+                        name: 'change',
+                        event: { value: processedFiles },
+                    });
+                } else {
+                    // For multi mode, add files one by one with a small delay between each
+                    // Add first file right away for immediate feedback
+                    const currentFiles = [...files.value];
+                    let newFiles = [...currentFiles];
 
-                setFiles(newFiles);
+                    // Function to add files one by one for smoother animation
+                    const addNextFile = index => {
+                        // Add the current file
+                        newFiles = [...newFiles, processedFiles[index]];
+                        setFiles(newFiles);
 
-                emit('trigger-event', {
-                    name: 'change',
-                    event: { value: newFiles },
-                });
+                        // If there are more files to add, schedule the next one
+                        if (index < processedFiles.length - 1) {
+                            setTimeout(() => {
+                                addNextFile(index + 1);
+                            }, 150); // Slightly longer delay for smoother height animation
+                        } else {
+                            // All files added, emit the change event
+                            emit('trigger-event', {
+                                name: 'change',
+                                event: { value: newFiles },
+                            });
+                            isProcessing.value = false;
+                        }
+                    };
+
+                    // Start adding files
+                    setTimeout(() => {
+                        addNextFile(0);
+                    }, 50);
+                    return; // Early return to prevent setting isProcessing to false too early
+                }
             }
 
             isProcessing.value = false;
@@ -671,7 +704,7 @@ export default {
         padding: v-bind('safeDropzonePadding');
         min-height: v-bind('safeDropzoneMinHeight');
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
         isolation: isolate;
 
         &:hover {
@@ -796,7 +829,7 @@ export default {
         pointer-events: none;
         z-index: -1;
         transform: translate(-50%, -50%);
-        transition: opacity 0.2s ease-out;
+        transition: opacity 0.3s ease-out;
         will-change: transform, left, top;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }

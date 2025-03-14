@@ -69,18 +69,22 @@ export default {
     display: flex;
     flex-direction: column;
     width: 100%;
+    overflow: hidden; // Contains the animations within the container
 
     &__inner {
         position: relative;
-        perspective: 800px;
-        transform-style: preserve-3d;
-        min-height: 40px; // Ensure there's space for animations
+        min-height: 0; // Allow proper height calculations
+        transition-property: height, opacity;
+        transition-duration: 0.5s;
+        transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+        will-change: height, opacity, transform;
     }
 }
 
-// File item transition animations - only for entering, not for leaving
+// File item transition animations
 .file-list-transition-enter-active {
     transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition-delay: 0.05s; // Slight delay to sync with container height
 }
 
 .file-list-transition-enter-from {
@@ -88,14 +92,14 @@ export default {
     transform: translateY(20px);
 }
 
-// Add staggered delay for sequential items
-@for $i from 0 through 10 {
-    .file-list-transition-enter-active:nth-child(#{$i + 1}) {
-        transition-delay: #{$i * 0.1}s;
-    }
+.file-list-transition-move {
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.file-list-transition-move {
-    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+// Add leave animation to ensure smooth height reduction
+.file-list-transition-leave-active {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: absolute;
+    width: 100%;
 }
 </style>

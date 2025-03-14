@@ -172,15 +172,13 @@ export function useDragAnimation({
                 animationFrameId = null;
             }
 
-            const baseDuration = 800;
-            const duration = baseDuration / animationSpeed.value;
-
+            // Simple, reliable animation with fixed duration
             anime({
                 targets: circleRef.value,
                 scale: [1, 35],
                 opacity: [circleOpacity.value, 0],
-                duration: duration,
-                easing: 'cubicBezier(0.25, 0.1, 0.25, 1)',
+                duration: 800,
+                easing: 'easeOutQuad',
                 complete: function () {
                     isDragging.value = false;
                 },
