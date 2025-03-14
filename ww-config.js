@@ -91,6 +91,8 @@ export default {
                 'progressBarColor',
                 'progressBarBorderRadius',
             ],
+            // Circle animation properties
+            ['circleAnimationTitle', 'enableCircleAnimation', 'circleSize', 'circleColor', 'circleOpacity'],
         ],
     },
     options: {
@@ -973,6 +975,66 @@ export default {
                 unitChoices: [{ value: 'px', label: 'px', min: 0, max: 20 }],
             },
             defaultValue: '2px',
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+
+        // ======== CIRCLE ANIMATION PROPERTIES ========
+        circleAnimationTitle: {
+            type: 'Title',
+            label: { en: 'Drag & Drop Animation' },
+            section: 'design',
+        },
+        enableCircleAnimation: {
+            label: { en: 'Enable circle animation' },
+            type: 'OnOff',
+            section: 'design',
+            defaultValue: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'boolean',
+                tooltip:
+                    'A boolean that defines if the circle animation during drag and drop is enabled: `true | false`',
+            },
+            /* wwEditor:end */
+        },
+        circleSize: {
+            label: { en: 'Circle size' },
+            type: 'Length',
+            section: 'design',
+            options: {
+                unitChoices: [{ value: 'px', label: 'px', min: 20, max: 500 }],
+            },
+            defaultValue: '180px',
+            hidden: content => !content.enableCircleAnimation,
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        circleColor: {
+            label: { en: 'Circle color' },
+            type: 'Color',
+            section: 'design',
+            defaultValue: null, // Will use progressBarColor by default
+            hidden: content => !content.enableCircleAnimation,
+            classes: true,
+            states: true,
+            responsive: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip: 'The color of the drag and drop circle. If not set, uses the progress bar color.',
+            },
+            /* wwEditor:end */
+        },
+        circleOpacity: {
+            label: { en: 'Circle opacity' },
+            type: 'Number',
+            options: { min: 0, max: 1, step: 0.1 },
+            section: 'design',
+            defaultValue: 0.5,
+            hidden: content => !content.enableCircleAnimation,
             classes: true,
             states: true,
             responsive: true,

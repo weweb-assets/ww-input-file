@@ -15,10 +15,26 @@
     >
         <!-- Main upload area -->
         <div
+            ref="dropzoneEl"
             class="ww-file-upload__dropzone"
             @click="openFileExplorer"
+            @mousemove="handleMouseMove"
             v-if="alwaysShowUploadArea || !hasFiles || type === 'multi'"
         >
+            <div
+                v-if="isDragging && !isDisabled && !isReadonly && enableCircleAnimation"
+                ref="circleEl"
+                class="ww-file-upload__hover-circle"
+                :style="{
+                    left: `${mouseX}px`,
+                    top: `${mouseY}px`,
+                    backgroundColor: circleColor,
+                    opacity: circleOpacity,
+                    width: circleSize,
+                    height: circleSize,
+                }"
+            ></div>
+
             <div class="ww-file-upload__content" :class="[`ww-file-upload__content--${uploadIconPosition}`]">
                 <div v-if="showUploadIcon" class="ww-file-upload__icon" :style="iconStyle">
                     <div v-html="iconHTML"></div>
@@ -61,7 +77,8 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, provide } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, provide, nextTick } from 'vue';
+import anime from 'animejs/lib/anime.es.js';
 import FileList from './components/FileList.vue';
 import { validateFile } from './utils/fileValidation';
 import { processFileForExport, getFileDetails } from './utils/fileProcessing';
@@ -109,6 +126,11 @@ export default {
         const processingQueue = ref([]);
         const isProcessing = ref(false);
         const iconText = ref(null);
+        const dropzoneEl = ref(null);
+        const circleEl = ref(null);
+        const mouseX = ref(0);
+        const mouseY = ref(0);
+        const isDropped = ref(false);
 
         // Fetch the icon
         watch(
@@ -236,7 +258,18 @@ export default {
 
         const handleDragOver = event => {
             if (isDisabled.value || isReadonly.value || !drop.value) return;
-            isDragging.value = true;
+
+            // Update mouse position on every drag over
+            if (dropzoneEl.value) {
+                const rect = dropzoneEl.value.getBoundingClientRect();
+                mouseX.value = event.clientX - rect.left;
+                mouseY.value = event.clientY - rect.top;
+            }
+
+            // Only set isDragging true and animate once on first entry
+            if (!isDragging.value) {
+                isDragging.value = true;
+            }
         };
 
         const handleDragLeave = () => {
@@ -245,6 +278,15 @@ export default {
 
         const handleDrop = async event => {
             if (isDisabled.value || isReadonly.value || !drop.value) return;
+
+            // Get the final position
+            if (dropzoneEl.value) {
+                const rect = dropzoneEl.value.getBoundingClientRect();
+                mouseX.value = event.clientX - rect.left;
+                mouseY.value = event.clientY - rect.top;
+            }
+
+            // We'll just set isDragging to false to hide the circle
             isDragging.value = false;
 
             const items = event.dataTransfer.files;
@@ -519,6 +561,26 @@ export default {
             }
         });
 
+        const handleMouseMove = event => {
+            if (!isDragging.value) return;
+
+            // Get dropzone position
+            if (dropzoneEl.value) {
+                const rect = dropzoneEl.value.getBoundingClientRect();
+                // Set circle position directly at the mouse
+                mouseX.value = event.clientX - rect.left;
+                mouseY.value = event.clientY - rect.top;
+            }
+        };
+
+        const enableCircleAnimation = computed(() => props.content?.enableCircleAnimation !== false); // Default is true
+        const circleSize = computed(() => props.content?.circleSize || '80px');
+        const circleColor = computed(() => props.content?.circleColor || safeProgressBarColor.value);
+        const circleOpacity = computed(() => {
+            const opacity = props.content?.circleOpacity;
+            return opacity !== undefined ? opacity : 0.5;
+        });
+
         return {
             fileInput,
             isDragging,
@@ -557,6 +619,10 @@ export default {
             uploadIconSize,
             uploadIconMargin,
             label,
+            enableCircleAnimation,
+            circleSize,
+            circleColor,
+            circleOpacity,
 
             // Safe properties for CSS
             safeDropzoneBorderWidth,
@@ -575,6 +641,12 @@ export default {
             safeProgressBarColor,
             safeLabelMarginBottom,
             safeProgressBarBackground,
+            dropzoneEl,
+            circleEl,
+            mouseX,
+            mouseY,
+            isDropped,
+            handleMouseMove,
         };
     },
 };
@@ -596,6 +668,8 @@ export default {
     }
 
     &__dropzone {
+        position: relative;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -716,6 +790,15 @@ export default {
             cursor: default;
             background-color: v-bind('safeDropzoneBackground');
         }
+    }
+
+    &__hover-circle {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 10;
+        transform: translate(-50%, -50%);
+        transition: transform 0.1s ease-out, opacity 0.1s ease-out;
     }
 }
 </style>
