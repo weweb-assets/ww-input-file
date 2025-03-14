@@ -100,10 +100,9 @@ export default {
     setup(props, { emit }) {
         const { getIcon } = wwLib.useIcons();
 
-        // Create direct computed properties for commonly used values
         const type = computed(() => props.content?.type || 'single');
         const reorder = computed(() => props.content?.reorder || false);
-        const drop = computed(() => props.content?.drop !== false); // Default is true
+        const drop = computed(() => props.content?.drop !== false);
         const maxFileSize = computed(() => props.content?.maxFileSize || 10);
         const minFileSize = computed(() => props.content?.minFileSize || 0);
         const maxTotalFileSize = computed(() => props.content?.maxTotalFileSize || 50);
@@ -113,8 +112,8 @@ export default {
         const customExtensions = computed(() => props.content?.customExtensions || '');
         const exposeBase64 = computed(() => props.content?.exposeBase64 || false);
         const exposeBinary = computed(() => props.content?.exposeBinary || false);
-        const alwaysShowUploadArea = computed(() => props.content?.alwaysShowUploadArea !== false); // Default is true
-        const showUploadIcon = computed(() => props.content?.showUploadIcon !== false); // Default is true
+        const alwaysShowUploadArea = computed(() => props.content?.alwaysShowUploadArea !== false);
+        const showUploadIcon = computed(() => props.content?.showUploadIcon !== false);
         const uploadIcon = computed(() => props.content?.uploadIcon || 'upload');
         const uploadIconColor = computed(() => props.content?.uploadIconColor || '#666666');
         const uploadIconPosition = computed(() => props.content?.uploadIconPosition || 'top');
@@ -130,7 +129,6 @@ export default {
         const isDropped = ref(false);
         const isProcessing = ref(false);
 
-        // Fetch the icon
         watch(
             () => uploadIcon.value,
             async icon => {
@@ -236,7 +234,6 @@ export default {
             });
         }
 
-        // Provide direct access to component config for child components
         provide('_wwFileUpload', {
             files: fileList,
             acceptedTypes: acceptedFileTypes,
@@ -252,8 +249,7 @@ export default {
             }
         };
 
-        // Define all the computed properties needed by the animation composable first
-        const enableCircleAnimation = computed(() => props.content?.enableCircleAnimation !== false); // Default is true
+        const enableCircleAnimation = computed(() => props.content?.enableCircleAnimation !== false);
         const circleSize = computed(() => props.content?.circleSize || '80px');
         const circleColor = computed(() => props.content?.circleColor || safeProgressBarColor.value);
         const circleOpacity = computed(() => {
@@ -287,7 +283,6 @@ export default {
         });
 
         const handleDrop = async event => {
-            // Let the animation composable handle the animation part
             const animationHandled = animationHandleDrop(event);
 
             if (!animationHandled || isDisabled.value || isReadonly.value || !drop.value) return;
@@ -597,7 +592,6 @@ export default {
             uploadIconPosition,
             handleMouseMove,
 
-            // Export all direct properties
             type,
             reorder,
             drop,
@@ -620,7 +614,6 @@ export default {
             circleOpacity,
             animationSpeed,
 
-            // Safe properties for CSS
             safeDropzoneBorderWidth,
             safeDropzoneBorderStyle,
             safeDropzoneBorderColor,
@@ -679,6 +672,7 @@ export default {
         min-height: v-bind('safeDropzoneMinHeight');
         cursor: pointer;
         transition: all 0.2s ease;
+        isolation: isolate;
 
         &:hover {
             border-color: v-bind('safeDropzoneBorderColor');
@@ -697,6 +691,8 @@ export default {
         text-align: center;
         width: 100%;
         pointer-events: none;
+        position: relative;
+        z-index: 2;
 
         &--top {
             flex-direction: column;
@@ -798,8 +794,8 @@ export default {
         position: absolute;
         border-radius: 50%;
         pointer-events: none;
-        z-index: 10;
-        transform: translate(-50%, -50%); /* Center the circle on the cursor */
+        z-index: -1;
+        transform: translate(-50%, -50%);
         transition: opacity 0.2s ease-out;
         will-change: transform, left, top;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
