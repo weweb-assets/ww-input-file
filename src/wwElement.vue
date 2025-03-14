@@ -294,7 +294,7 @@ export default {
             // This ensures a smooth transition from drop to file appearance
             setTimeout(async () => {
                 await processFiles(items);
-            }, 850); // Slightly longer than the animation to ensure it completes
+            }, 1050); // Adjusted to match the new animation duration (expansion + fade + small buffer)
         };
 
         const handleFileSelection = async event => {
@@ -829,9 +829,10 @@ export default {
         pointer-events: none;
         z-index: -1;
         transform: translate(-50%, -50%);
-        transition: opacity 0.3s ease-out;
-        will-change: transform, left, top;
+        transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        will-change: transform, opacity;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        backface-visibility: hidden; // Helps with smoother animations
     }
 }
 </style>

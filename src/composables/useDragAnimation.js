@@ -176,11 +176,20 @@ export function useDragAnimation({
             anime({
                 targets: circleRef.value,
                 scale: [1, 35],
-                opacity: [circleOpacity.value, 0],
-                duration: 800,
-                easing: 'easeOutQuad',
+                opacity: [circleOpacity.value, circleOpacity.value], // Keep opacity constant during expansion
+                duration: 700,
+                easing: 'easeOutCubic',
                 complete: function () {
-                    isDragging.value = false;
+                    // Fade out smoothly after expansion is complete
+                    anime({
+                        targets: circleRef.value,
+                        opacity: [circleOpacity.value, 0],
+                        duration: 300,
+                        easing: 'linear', // Linear fade for smoother appearance
+                        complete: function () {
+                            isDragging.value = false;
+                        },
+                    });
                 },
             });
         } else {
