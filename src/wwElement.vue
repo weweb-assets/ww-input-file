@@ -291,10 +291,9 @@ export default {
             if (!items.length) return;
 
             // Wait for the circle animation to complete before processing files
-            // This ensures a smooth transition from drop to file appearance
             setTimeout(async () => {
                 await processFiles(items);
-            }, 1050); // Adjusted to match the new animation duration (expansion + fade + small buffer)
+            }, 1050);
         };
 
         const handleFileSelection = async event => {
@@ -371,7 +370,6 @@ export default {
             const limitedFiles = filesToProcess.slice(0, availableSlots);
             const processedFiles = [];
 
-            // Process all files first to get them ready
             for (const file of limitedFiles) {
                 const validationResult = validateFile(file, {
                     maxFileSize: maxFileSize.value,

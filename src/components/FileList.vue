@@ -69,11 +69,11 @@ export default {
     display: flex;
     flex-direction: column;
     width: 100%;
-    overflow: hidden; // Contains the animations within the container
+    overflow: hidden;
 
     &__inner {
         position: relative;
-        min-height: 0; // Allow proper height calculations
+        min-height: 0;
         transition-property: height, opacity;
         transition-duration: 0.5s;
         transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -81,10 +81,9 @@ export default {
     }
 }
 
-// File item transition animations
 .file-list-transition-enter-active {
     transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-    transition-delay: 0.05s; // Slight delay to sync with container height
+    transition-delay: 0.05s;
 }
 
 .file-list-transition-enter-from {
@@ -96,7 +95,6 @@ export default {
     transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-// Add leave animation to ensure smooth height reduction
 .file-list-transition-leave-active {
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: absolute;

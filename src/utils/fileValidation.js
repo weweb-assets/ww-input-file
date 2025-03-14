@@ -1,14 +1,3 @@
-/**
- * Validates a file against specified constraints
- * @param {File} file - The file to validate
- * @param {Object} options - Validation options
- * @param {number} [options.maxFileSize] - Maximum file size in MB
- * @param {number} [options.minFileSize] - Minimum file size in MB
- * @param {number} [options.maxTotalFileSize] - Maximum total size of all files in MB
- * @param {number} [options.currentTotalSize] - Current total size of all files in MB
- * @param {string} [options.acceptedTypes] - Accepted file types string (e.g. '.jpg,.png,image/*')
- * @returns {Object} Validation result with valid boolean and reason string if invalid
- */
 export function validateFile(file, options = {}) {
     const { maxFileSize, minFileSize, maxTotalFileSize, currentTotalSize = 0, acceptedTypes = '' } = options;
 
@@ -77,49 +66,32 @@ export function validateFile(file, options = {}) {
     return { valid: true };
 }
 
-/**
- * Checks if a file's type is in the accepted types string
- * @param {File} file - The file to check
- * @param {string} acceptedTypes - Comma-separated list of accepted file types
- * @returns {boolean} Whether the file type is accepted
- */
 function isFileTypeAccepted(file, acceptedTypes) {
     if (!acceptedTypes) return true;
 
-    // No file or no file type means we can't validate
     if (!file || !file.type) return false;
 
     const acceptedTypesArray = acceptedTypes.split(',').map(type => type.trim().toLowerCase());
 
-    // Check for wildcards like "image/*"
     const typeCategory = file.type.split('/')[0] + '/*';
     if (acceptedTypesArray.includes(typeCategory)) {
         return true;
     }
 
-    // Check for specific MIME type
     if (acceptedTypesArray.includes(file.type.toLowerCase())) {
         return true;
     }
 
-    // Check for file extension
     const extension = '.' + file.name.split('.').pop().toLowerCase();
     return acceptedTypesArray.includes(extension);
 }
 
-/**
- * Gets file extension from filename or MIME type
- * @param {string} filename - The filename to parse
- * @param {string} [mimeType] - Optional MIME type as fallback
- * @returns {string} The file extension without dot
- */
 export function getFileExtension(filename, mimeType) {
     if (filename && filename.includes('.')) {
         return filename.split('.').pop().toLowerCase();
     }
 
     if (mimeType) {
-        // Extract extension from MIME type if possible
         const mimeExtensions = {
             'image/jpeg': 'jpg',
             'image/png': 'png',

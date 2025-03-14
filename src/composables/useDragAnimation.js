@@ -172,20 +172,18 @@ export function useDragAnimation({
                 animationFrameId = null;
             }
 
-            // Simple, reliable animation with fixed duration
             anime({
                 targets: circleRef.value,
                 scale: [1, 35],
-                opacity: [circleOpacity.value, circleOpacity.value], // Keep opacity constant during expansion
+                opacity: [circleOpacity.value, circleOpacity.value],
                 duration: 700,
                 easing: 'easeOutCubic',
                 complete: function () {
-                    // Fade out smoothly after expansion is complete
                     anime({
                         targets: circleRef.value,
                         opacity: [circleOpacity.value, 0],
                         duration: 300,
-                        easing: 'linear', // Linear fade for smoother appearance
+                        easing: 'linear',
                         complete: function () {
                             isDragging.value = false;
                         },
@@ -207,7 +205,7 @@ export function useDragAnimation({
             targetX.value = event.clientX - rect.left;
             targetY.value = event.clientY - rect.top;
         }
-    }, Math.max(5, 16 / animationSpeed.value)); // Adjust debounce time based on animation speed
+    }, Math.max(5, 16 / animationSpeed.value));
 
     onBeforeUnmount(() => {
         if (animationFrameId) {

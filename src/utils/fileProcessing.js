@@ -1,10 +1,5 @@
 import { getFileExtension } from './fileValidation';
 
-/**
- * Get detailed information about a file
- * @param {File} file - The file to get details for
- * @returns {Object} File details including size, type, and extension
- */
 export async function getFileDetails(file) {
     const extension = getFileExtension(file.name, file.type);
     const sizeInMB = file.size / (1024 * 1024);
@@ -21,14 +16,6 @@ export async function getFileDetails(file) {
     };
 }
 
-/**
- * Process a file for export (Base64 or Binary)
- * @param {File} file - The file to process
- * @param {Object} options - Processing options
- * @param {boolean} [options.base64=false] - Whether to process as Base64
- * @param {boolean} [options.binary=false] - Whether to process as Binary
- * @returns {Promise<Object>} Object containing processed data
- */
 export async function processFileForExport(file, options = {}) {
     const { base64 = false, binary = false } = options;
     const result = {};
@@ -44,11 +31,6 @@ export async function processFileForExport(file, options = {}) {
     return result;
 }
 
-/**
- * Convert a file to Base64 string
- * @param {File} file - The file to convert
- * @returns {Promise<string>} Base64-encoded string with MIME type prefix
- */
 export function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -65,11 +47,6 @@ export function fileToBase64(file) {
     });
 }
 
-/**
- * Convert a file to binary data
- * @param {File} file - The file to convert
- * @returns {Promise<ArrayBuffer>} Binary data as ArrayBuffer
- */
 export function fileToBinary(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
