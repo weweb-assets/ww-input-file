@@ -82,6 +82,7 @@ import anime from 'animejs/lib/anime.es.js';
 import FileList from './components/FileList.vue';
 import { validateFile } from './utils/fileValidation';
 import { processFileForExport, getFileDetails } from './utils/fileProcessing';
+import { useDragAnimation } from './composables/useDragAnimation';
 
 export default {
     components: {
@@ -122,15 +123,12 @@ export default {
         const label = computed(() => props.content?.label || 'Upload files');
 
         const fileInput = ref(null);
-        const isDragging = ref(false);
         const processingQueue = ref([]);
-        const isProcessing = ref(false);
         const iconText = ref(null);
         const dropzoneEl = ref(null);
         const circleEl = ref(null);
-        const mouseX = ref(0);
-        const mouseY = ref(0);
         const isDropped = ref(false);
+        const isProcessing = ref(false);
 
         // Fetch the icon
         watch(
@@ -239,8 +237,6 @@ export default {
         }
 
         // Provide direct access to component config for child components
-        const componentContent = computed(() => props.content || {});
-
         provide('_wwFileUpload', {
             files: fileList,
             acceptedTypes: acceptedFileTypes,
@@ -256,43 +252,54 @@ export default {
             }
         };
 
-        const handleDragOver = event => {
-            if (isDisabled.value || isReadonly.value || !drop.value) return;
+        // Define all the computed properties needed by the animation composable first
+        const enableCircleAnimation = computed(() => props.content?.enableCircleAnimation !== false); // Default is true
+        const circleSize = computed(() => props.content?.circleSize || '80px');
+        const circleColor = computed(() => props.content?.circleColor || safeProgressBarColor.value);
+        const circleOpacity = computed(() => {
+            const opacity = props.content?.circleOpacity;
+            return opacity !== undefined ? opacity : 0.5;
+        });
+        const animationSpeed = computed(() => {
+            const speed = props.content?.animationSpeed;
+            return speed !== undefined ? speed : 0.5; // Half speed by default
+        });
 
-            // Update mouse position on every drag over
-            if (dropzoneEl.value) {
-                const rect = dropzoneEl.value.getBoundingClientRect();
-                mouseX.value = event.clientX - rect.left;
-                mouseY.value = event.clientY - rect.top;
-            }
-
-            // Only set isDragging true and animate once on first entry
-            if (!isDragging.value) {
-                isDragging.value = true;
-            }
-        };
-
-        const handleDragLeave = () => {
-            isDragging.value = false;
-        };
+        const {
+            isDragging,
+            mouseX,
+            mouseY,
+            targetX,
+            targetY,
+            isAnimating,
+            handleDragOver: animationHandleDragOver,
+            handleDragLeave: animationHandleDragLeave,
+            handleDrop: animationHandleDrop,
+            handleMouseMove: animationHandleMouseMove,
+        } = useDragAnimation({
+            dropzoneRef: dropzoneEl,
+            circleRef: circleEl,
+            isDisabled,
+            isReadonly,
+            dropEnabled: drop,
+            circleOpacity,
+            animationSpeed,
+        });
 
         const handleDrop = async event => {
-            if (isDisabled.value || isReadonly.value || !drop.value) return;
+            // Let the animation composable handle the animation part
+            const animationHandled = animationHandleDrop(event);
 
-            // Get the final position
-            if (dropzoneEl.value) {
-                const rect = dropzoneEl.value.getBoundingClientRect();
-                mouseX.value = event.clientX - rect.left;
-                mouseY.value = event.clientY - rect.top;
-            }
-
-            // We'll just set isDragging to false to hide the circle
-            isDragging.value = false;
+            if (!animationHandled || isDisabled.value || isReadonly.value || !drop.value) return;
 
             const items = event.dataTransfer.files;
             if (!items.length) return;
 
-            await processFiles(items);
+            // Add a small delay after the drop animation completes before processing files
+            // This will make the file item animations look smoother
+            setTimeout(async () => {
+                await processFiles(items);
+            }, 200);
         };
 
         const handleFileSelection = async event => {
@@ -386,6 +393,9 @@ export default {
 
                     const fileDetails = await getFileDetails(file);
 
+                    // Add a unique ID to the file for stable transitions
+                    fileDetails.id = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
                     if (exposeBase64.value || exposeBinary.value) {
                         const processedData = await processFileForExport(file, {
                             base64: exposeBase64.value,
@@ -439,13 +449,13 @@ export default {
         const removeFile = index => {
             if (isDisabled.value || isReadonly.value) return;
 
-            const newFiles = [...files.value];
-            newFiles.splice(index, 1);
-            setFiles(newFiles);
+            // Remove file immediately without animation
+            const updatedFiles = [...files.value.filter((_, i) => i !== index)];
+            setFiles(updatedFiles);
 
             emit('trigger-event', {
                 name: 'change',
-                event: { value: newFiles },
+                event: { value: updatedFiles },
             });
         };
 
@@ -541,7 +551,7 @@ export default {
         const safeLabelColor = computed(() => props.content?.labelColor || '#333333');
         const safeFileDetailsFontSize = computed(() => props.content?.fileDetailsFontSize || '12px');
         const safeFileDetailsColor = computed(() => props.content?.fileDetailsColor || '#888888');
-        const safeProgressBarColor = computed(() => props.content?.progressBarColor || '#4299E1');
+        const safeProgressBarColor = computed(() => props.content?.progressBarColor || '#EEEEEE');
         const safeLabelMarginBottom = computed(() => {
             const labelMargin = props.content?.labelMargin || '0 0 4px 0';
             const parts = labelMargin.split(' ');
@@ -549,37 +559,21 @@ export default {
         });
         const safeProgressBarBackground = computed(() => {
             const color = safeProgressBarColor.value;
-            if (!color) return 'rgba(66, 153, 225, 0.05)';
+            if (!color) return 'rgba(85, 85, 85, 0.05)';
 
             try {
-                const r = parseInt(color.slice(1, 3), 16) || 66;
-                const g = parseInt(color.slice(3, 5), 16) || 153;
-                const b = parseInt(color.slice(5, 7), 16) || 225;
+                const r = parseInt(color.slice(1, 3), 16) || 85;
+                const g = parseInt(color.slice(3, 5), 16) || 85;
+                const b = parseInt(color.slice(5, 7), 16) || 85;
                 return `rgba(${r}, ${g}, ${b}, 0.05)`;
             } catch (e) {
-                return 'rgba(66, 153, 225, 0.05)';
+                return 'rgba(85, 85, 85, 0.05)';
             }
         });
 
-        const handleMouseMove = event => {
-            if (!isDragging.value) return;
-
-            // Get dropzone position
-            if (dropzoneEl.value) {
-                const rect = dropzoneEl.value.getBoundingClientRect();
-                // Set circle position directly at the mouse
-                mouseX.value = event.clientX - rect.left;
-                mouseY.value = event.clientY - rect.top;
-            }
-        };
-
-        const enableCircleAnimation = computed(() => props.content?.enableCircleAnimation !== false); // Default is true
-        const circleSize = computed(() => props.content?.circleSize || '80px');
-        const circleColor = computed(() => props.content?.circleColor || safeProgressBarColor.value);
-        const circleOpacity = computed(() => {
-            const opacity = props.content?.circleOpacity;
-            return opacity !== undefined ? opacity : 0.5;
-        });
+        const handleDragOver = animationHandleDragOver;
+        const handleDragLeave = animationHandleDragLeave;
+        const handleMouseMove = animationHandleMouseMove;
 
         return {
             fileInput,
@@ -601,6 +595,7 @@ export default {
             iconHTML,
             iconStyle,
             uploadIconPosition,
+            handleMouseMove,
 
             // Export all direct properties
             type,
@@ -623,6 +618,7 @@ export default {
             circleSize,
             circleColor,
             circleOpacity,
+            animationSpeed,
 
             // Safe properties for CSS
             safeDropzoneBorderWidth,
@@ -646,7 +642,10 @@ export default {
             mouseX,
             mouseY,
             isDropped,
-            handleMouseMove,
+            targetX,
+            targetY,
+            isAnimating,
+            isProcessing,
         };
     },
 };
@@ -697,6 +696,7 @@ export default {
         justify-content: center;
         text-align: center;
         width: 100%;
+        pointer-events: none;
 
         &--top {
             flex-direction: column;
@@ -722,6 +722,7 @@ export default {
     &__text {
         display: flex;
         flex-direction: column;
+        pointer-events: none;
     }
 
     &__icon {
@@ -732,6 +733,7 @@ export default {
         justify-content: center;
         align-items: center;
         flex-shrink: 0;
+        pointer-events: none;
 
         .ww-file-upload__content--top & {
             margin-bottom: v-bind('uploadIconMargin');
@@ -797,8 +799,10 @@ export default {
         border-radius: 50%;
         pointer-events: none;
         z-index: 10;
-        transform: translate(-50%, -50%);
-        transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+        transform: translate(-50%, -50%); /* Center the circle on the cursor */
+        transition: opacity 0.2s ease-out;
+        will-change: transform, left, top;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 }
 </style>

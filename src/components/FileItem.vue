@@ -87,7 +87,7 @@ export default {
         },
     },
     emits: ['remove', 'reorder'],
-    setup(props) {
+    setup(props, { emit }) {
         const fileUpload = inject('_wwFileUpload', {
             files: computed(() => []),
             content: computed(() => ({})),
@@ -135,8 +135,9 @@ export default {
         const progressBarStyles = computed(() => ({
             width: `${props.file.uploadProgress || 0}%`,
             height: '100%',
-            backgroundColor: content.value?.progressBarColor || '#4299e1',
+            backgroundColor: content.value?.progressBarColor || '#555',
             borderRadius: content.value?.progressBarBorderRadius || '2px',
+            transition: 'width 0.3s ease',
         }));
 
         const actionButtonStyles = computed(() => ({
@@ -184,7 +185,12 @@ export default {
     border-radius: v-bind('content?.fileItemBorderRadius || "6px"');
     margin-bottom: v-bind('(content?.fileItemMargin || "0 0 8px 0").split(" ")[2] || "8px"');
     background-color: v-bind('content?.fileItemBackground || "#fff"');
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform-origin: center;
+    position: relative;
+    z-index: 1;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
 
     &:hover {
         border-color: v-bind('content?.fileItemHoverBorderColor || content?.fileItemBorderColor || "#ddd"');
@@ -230,7 +236,7 @@ export default {
 
     &__progress-bar {
         height: 100%;
-        background-color: v-bind('content?.progressBarColor || "#4299e1"');
+        background-color: v-bind('content?.progressBarColor || "#555"');
         border-radius: v-bind('content?.progressBarBorderRadius || "2px"');
         transition: width 0.3s ease;
     }
@@ -239,6 +245,12 @@ export default {
         display: flex;
         align-items: center;
         margin-left: 12px;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+    }
+
+    &:hover &__actions {
+        opacity: 1;
     }
 
     &__btn {
@@ -259,7 +271,8 @@ export default {
             border-color: v-bind(
                 'content?.actionButtonHoverBorderColor || content?.fileItemHoverBorderColor || "#ddd"'
             );
-            background-color: v-bind('content?.actionButtonHoverBackground || "#f9f9f9"');
+            background-color: v-bind('content?.actionButtonHoverBackground || "#f8f8f8"');
+            transform: scale(1.05);
         }
 
         &:disabled {
@@ -268,8 +281,8 @@ export default {
         }
 
         &--remove:hover:not(:disabled) {
-            color: v-bind('content?.actionButtonRemoveHoverColor || content?.progressBarColor || "#e53e3e"');
-            border-color: v-bind('content?.actionButtonRemoveHoverColor || content?.progressBarColor || "#e53e3e"');
+            color: v-bind('content?.actionButtonRemoveHoverColor || content?.progressBarColor || "#999"');
+            border-color: v-bind('content?.actionButtonRemoveHoverColor || content?.progressBarColor || "#999"');
         }
     }
 }

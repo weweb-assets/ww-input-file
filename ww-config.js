@@ -92,7 +92,14 @@ export default {
                 'progressBarBorderRadius',
             ],
             // Circle animation properties
-            ['circleAnimationTitle', 'enableCircleAnimation', 'circleSize', 'circleColor', 'circleOpacity'],
+            [
+                'circleAnimationTitle',
+                'enableCircleAnimation',
+                'circleSize',
+                'circleColor',
+                'circleOpacity',
+                'animationSpeed',
+            ],
         ],
     },
     options: {
@@ -865,7 +872,7 @@ export default {
             label: { en: 'Hover background color' },
             type: 'Color',
             section: 'design',
-            defaultValue: '#F9F9F9',
+            defaultValue: '#F8F8F8',
             classes: true,
             states: true,
             responsive: true,
@@ -901,7 +908,7 @@ export default {
             label: { en: 'Remove button hover color' },
             type: 'Color',
             section: 'design',
-            defaultValue: '#E53E3E',
+            defaultValue: '#999999',
             classes: true,
             states: true,
             responsive: true,
@@ -962,7 +969,7 @@ export default {
             label: { en: 'Fill color' },
             type: 'Color',
             section: 'design',
-            defaultValue: '#4299E1',
+            defaultValue: '#EEEEEE',
             classes: true,
             states: true,
             responsive: true,
@@ -1016,7 +1023,7 @@ export default {
             label: { en: 'Circle color' },
             type: 'Color',
             section: 'design',
-            defaultValue: null, // Will use progressBarColor by default
+            defaultValue: '#EEEEEE',
             hidden: content => !content.enableCircleAnimation,
             classes: true,
             states: true,
@@ -1038,6 +1045,24 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+        },
+        animationSpeed: {
+            label: { en: 'Animation speed' },
+            type: 'Number',
+            options: { min: 0.1, max: 2, step: 0.1 },
+            section: 'design',
+            defaultValue: 0.5, // Half speed by default
+            hidden: content => !content.enableCircleAnimation,
+            classes: true,
+            states: true,
+            responsive: true,
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'number',
+                tooltip:
+                    'Controls the speed of the drag and drop animation (0.5 = half speed, 1 = normal, 2 = double speed)',
+            },
+            /* wwEditor:end */
         },
     },
 };
