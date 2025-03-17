@@ -113,7 +113,6 @@ export default {
             fileItemStyles,
             fileNameStyles,
             fileDetailsStyles,
-            progressBarStyles,
             actionButtonStyles,
             content,
             showFileInfo,
