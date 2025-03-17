@@ -15,7 +15,6 @@ Properties:
 -   `minFileSize`: `number` - Minimum file size in MB. Default: `0`
 -   `maxTotalFileSize`: `number` - Maximum total size for all files in MB. Default: `50`
 -   `maxFiles`: `number` - Maximum number of files allowed in multi-file mode. Default: `10`
--   `showFileInfo`: `boolean` - Shows file information (size, type). Default: `true`
 -   `required`: `boolean` - Makes the file upload field required. Default: `false`
 -   `readonly`: `boolean` - Makes the component read-only. Default: `false`
 -   `extensions`: `'any' | 'image' | 'video' | 'audio' | 'pdf' | 'csv' | 'excel' | 'word' | 'json' | 'custom'` - Allowed file types. Default: `'any'`
@@ -69,6 +68,7 @@ Style Properties:
 -   `fileNameFontSize`: `string` - Font size for file names. Default: `'14px'`
 -   `fileNameFontWeight`: `string` - Font weight for file names. Default: `500`
 -   `fileNameColor`: `string` - Color for file names. Default: `'#333333'`
+-   `showFileInfo`: `boolean` - Shows file information (size, type). Default: `true`
 -   `fileDetailsFontFamily`: `string` - Font family for file details. Default: `'inherit'`
 -   `fileDetailsFontSize`: `string` - Font size for file details. Default: `'12px'`
 -   `fileDetailsFontWeight`: `string` - Font weight for file details. Default: `'normal'`
