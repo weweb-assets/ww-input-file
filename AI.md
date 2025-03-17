@@ -22,7 +22,6 @@ Properties:
 -   `customExtensions`: `string` - Comma-separated list of allowed file extensions when using custom extensions. Default: `''`
 -   `exposeBase64`: `boolean` - Exposes file content as Base64 data. Default: `false`
 -   `exposeBinary`: `boolean` - Exposes file content as binary data. Default: `false`
--   `alwaysShowUploadArea`: `boolean` - Always shows the upload area even when files are selected. Default: `true`
 -   `showUploadIcon`: `boolean` - Shows the upload icon. Default: `true`
 -   `uploadIcon`: `string` - Icon to use for upload. Default: `'upload'`
 -   `uploadIconPosition`: `'top' | 'right' | 'bottom' | 'left'` - Position of the upload icon. Default: `'top'`

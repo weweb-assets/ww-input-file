@@ -14,13 +14,7 @@
         aria-label="File upload area"
     >
         <!-- Main upload area -->
-        <div
-            ref="dropzoneEl"
-            class="ww-file-upload__dropzone"
-            @click="openFileExplorer"
-            @mousemove="handleMouseMove"
-            v-if="alwaysShowUploadArea || !hasFiles || type === 'multi'"
-        >
+        <div ref="dropzoneEl" class="ww-file-upload__dropzone" @click="openFileExplorer" @mousemove="handleMouseMove">
             <div
                 v-if="isDragging && !isDisabled && !isReadonly && enableCircleAnimation"
                 ref="circleEl"
@@ -141,7 +135,6 @@ export default {
         const customExtensions = computed(() => props.content?.customExtensions || '');
         const exposeBase64 = computed(() => props.content?.exposeBase64 || false);
         const exposeBinary = computed(() => props.content?.exposeBinary || false);
-        const alwaysShowUploadArea = computed(() => props.content?.alwaysShowUploadArea !== false);
         const showUploadIcon = computed(() => props.content?.showUploadIcon !== false);
         const uploadIcon = computed(() => props.content?.uploadIcon || 'upload');
         const uploadIconColor = computed(() => props.content?.uploadIconColor || '#666666');
@@ -617,7 +610,7 @@ export default {
             }
         };
 
-        wwLib.wwElement.useRegisterElementLocalContext('_wwFileUpload', localData.value.fileUpload, {
+        wwLib.wwElement.useRegisterElementLocalContext('fileUpload', localData.value.fileUpload, {
             clearFiles: {
                 description: 'Clear all files',
                 method: clearFiles,
@@ -741,7 +734,6 @@ export default {
             required,
             extensions,
             customExtensions,
-            alwaysShowUploadArea,
             showUploadIcon,
             uploadIcon,
             uploadIconColor,

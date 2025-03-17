@@ -18,7 +18,6 @@ export default {
             'customExtensions',
             'exposeBase64',
             'exposeBinary',
-            'alwaysShowUploadArea',
         ],
         customStylePropertiesOrder: [
             // Dropzone properties
@@ -147,11 +146,6 @@ export default {
         {
             label: { en: 'Clear Files' },
             action: 'actionClearFiles',
-            args: [],
-        },
-        {
-            label: { en: 'Start Uploading' },
-            action: 'actionStartUploading',
             args: [],
         },
         {
@@ -388,19 +382,6 @@ export default {
             bindingValidation: {
                 type: 'boolean',
                 tooltip: 'A boolean that defines if files should be exposed as Binary: `true | false`',
-            },
-            /* wwEditor:end */
-        },
-        alwaysShowUploadArea: {
-            label: { en: 'Always show upload area' },
-            type: 'OnOff',
-            section: 'settings',
-            defaultValue: true,
-            /* wwEditor:start */
-            bindingValidation: {
-                type: 'boolean',
-                tooltip:
-                    'A boolean that defines if the upload area should always be visible, even when files are already uploaded: `true | false`',
             },
             /* wwEditor:end */
         },
