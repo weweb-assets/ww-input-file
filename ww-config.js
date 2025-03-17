@@ -11,7 +11,6 @@ export default {
             'minFileSize',
             'maxTotalFileSize',
             'maxFiles',
-            'showFileInfo',
             'required',
             'readonly',
             'extensions',
@@ -89,6 +88,7 @@ export default {
                 'fileNameFontWeight',
                 'fileNameColor',
                 'fileDetailsTitle',
+                'showFileInfo',
                 'fileDetailsFontFamily',
                 'fileDetailsFontSize',
                 'fileDetailsFontWeight',
@@ -291,9 +291,8 @@ export default {
             /* wwEditor:end */
         },
         showFileInfo: {
-            label: { en: 'Show file info' },
+            label: { en: 'Show file details' },
             type: 'OnOff',
-            section: 'settings',
             defaultValue: true,
         },
         required: {
