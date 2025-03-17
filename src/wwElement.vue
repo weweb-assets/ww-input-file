@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, onBeforeUnmount, provide, nextTick } from 'vue';
+import { ref, computed, watch, provide, nextTick } from 'vue';
 import anime from 'animejs/lib/anime.es.js';
 import FileList from './components/FileList.vue';
 import { validateFile } from './utils/fileValidation';
@@ -98,8 +98,25 @@ export default {
     },
     emits: ['trigger-event', 'add-state', 'remove-state'],
     setup(props, { emit }) {
+        const isEditing = computed(() => {
+            /* wwEditor:start */
+            return props.wwEditorState?.isEditing;
+            /* wwEditor:end */
+            // eslint-disable-next-line no-unreachable
+            return false;
+        });
+
         const { getIcon } = wwLib.useIcons();
 
+        // Props and Refs
+        const fileInput = ref(null);
+        const dropzoneEl = ref(null);
+        const circleEl = ref(null);
+        const processingQueue = ref([]);
+        const iconText = ref(null);
+        const isProcessing = ref(false);
+
+        // Content properties
         const type = computed(() => props.content?.type || 'single');
         const reorder = computed(() => props.content?.reorder || false);
         const drop = computed(() => props.content?.drop !== false);
@@ -120,38 +137,50 @@ export default {
         const uploadIconSize = computed(() => props.content?.uploadIconSize || '24px');
         const uploadIconMargin = computed(() => props.content?.uploadIconMargin || '8px');
         const label = computed(() => props.content?.label || 'Upload files');
-
-        const fileInput = ref(null);
-        const processingQueue = ref([]);
-        const iconText = ref(null);
-        const dropzoneEl = ref(null);
-        const circleEl = ref(null);
-        const isDropped = ref(false);
-        const isProcessing = ref(false);
-
-        watch(
-            () => uploadIcon.value,
-            async icon => {
-                if (icon && showUploadIcon.value) {
-                    try {
-                        iconText.value = await getIcon(icon);
-                    } catch (error) {
-                        iconText.value = null;
-                    }
-                } else {
-                    iconText.value = null;
-                }
-            },
-            { immediate: true }
+        const enableCircleAnimation = computed(() => props.content?.enableCircleAnimation !== false);
+        const circleSize = computed(() => props.content?.circleSize || '80px');
+        const circleColor = computed(() => props.content?.circleColor || safeProgressBarColor.value);
+        const circleOpacity = computed(() =>
+            props.content?.circleOpacity !== undefined ? props.content.circleOpacity : 0.5
+        );
+        const animationSpeed = computed(() =>
+            props.content?.animationSpeed !== undefined ? props.content.animationSpeed : 0.5
         );
 
-        const { value: files, setValue: setFiles } = wwLib.wwVariable.useComponentVariable({
-            uid: props.uid,
-            name: 'value',
-            defaultValue: [],
-            type: 'array',
+        // Style properties
+        const safeDropzoneBorderWidth = computed(() => props.content?.dropzoneBorderWidth || '2px');
+        const safeDropzoneBorderStyle = computed(() => props.content?.dropzoneBorderStyle || 'dashed');
+        const safeDropzoneBorderColor = computed(() => props.content?.dropzoneBorderColor || '#CCCCCC');
+        const safeDropzoneBorderRadius = computed(() => props.content?.dropzoneBorderRadius || '8px');
+        const safeDropzonePadding = computed(() => props.content?.dropzonePadding || '20px');
+        const safeDropzoneMinHeight = computed(() => props.content?.dropzoneMinHeight || '120px');
+        const safeDropzoneBackground = computed(() => props.content?.dropzoneBackground || 'rgba(0, 0, 0, 0.01)');
+        const safeLabelFontSize = computed(() => props.content?.labelFontSize || '16px');
+        const safeLabelFontFamily = computed(() => props.content?.labelFontFamily || 'inherit');
+        const safeLabelFontWeight = computed(() => props.content?.labelFontWeight || 'normal');
+        const safeLabelColor = computed(() => props.content?.labelColor || '#333333');
+        const safeFileDetailsFontSize = computed(() => props.content?.fileDetailsFontSize || '12px');
+        const safeFileDetailsColor = computed(() => props.content?.fileDetailsColor || '#888888');
+        const safeProgressBarColor = computed(() => props.content?.progressBarColor || '#EEEEEE');
+        const safeLabelMarginBottom = computed(() => {
+            const labelMargin = props.content?.labelMargin || '0 0 4px 0';
+            return labelMargin.split(' ')[2] || '4px';
+        });
+        const safeProgressBarBackground = computed(() => {
+            const color = safeProgressBarColor.value;
+            if (!color) return 'rgba(85, 85, 85, 0.05)';
+
+            try {
+                const r = parseInt(color.slice(1, 3), 16) || 85;
+                const g = parseInt(color.slice(3, 5), 16) || 85;
+                const b = parseInt(color.slice(5, 7), 16) || 85;
+                return `rgba(${r}, ${g}, ${b}, 0.05)`;
+            } catch (e) {
+                return 'rgba(85, 85, 85, 0.05)';
+            }
         });
 
+        // Element state
         const isDisabled = computed(() => props.wwElementState.props.disabled || false);
         const isReadonly = computed(() => {
             /* wwEditor:start */
@@ -164,25 +193,16 @@ export default {
                 : props.wwElementState.props.readonly;
         });
 
+        // Files handling
+        const { value: files, setValue: setFiles } = wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'value',
+            defaultValue: [],
+            type: 'array',
+        });
+
         const fileList = computed(() => (Array.isArray(files.value) ? files.value : []));
         const hasFiles = computed(() => fileList.value.length > 0);
-
-        const iconHTML = computed(() => {
-            /* wwEditor:start */
-            return (
-                iconText.value ||
-                '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>'
-            );
-            /* wwEditor:end */
-            return iconText.value;
-        });
-
-        const iconStyle = computed(() => {
-            return {
-                color: uploadIconColor.value,
-            };
-        });
-
         const acceptedFileTypes = computed(() => {
             switch (extensions.value) {
                 case 'image':
@@ -207,11 +227,38 @@ export default {
                     return '';
             }
         });
+        const hasTypeRestriction = computed(() => extensions.value && extensions.value !== 'any');
 
-        const hasTypeRestriction = computed(() => {
-            return extensions.value && extensions.value !== 'any';
+        // Upload icon
+        watch(
+            () => uploadIcon.value,
+            async icon => {
+                if (icon && showUploadIcon.value) {
+                    try {
+                        iconText.value = await getIcon(icon);
+                    } catch (error) {
+                        iconText.value = null;
+                    }
+                } else {
+                    iconText.value = null;
+                }
+            },
+            { immediate: true }
+        );
+
+        const iconHTML = computed(() => {
+            /* wwEditor:start */
+            return (
+                iconText.value ||
+                '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>'
+            );
+            /* wwEditor:end */
+            return iconText.value;
         });
 
+        const iconStyle = computed(() => ({ color: uploadIconColor.value }));
+
+        // Local data for element context
         const localData = ref({
             fileUpload: {
                 value: fileList,
@@ -223,15 +270,11 @@ export default {
         });
 
         if (exposeBase64.value) {
-            localData.value.fileUpload.base64 = computed(() => {
-                return fileList.value.map(file => file.base64 || null);
-            });
+            localData.value.fileUpload.base64 = computed(() => fileList.value.map(file => file.base64 || null));
         }
 
         if (exposeBinary.value) {
-            localData.value.fileUpload.binary = computed(() => {
-                return fileList.value.map(file => file.binary || null);
-            });
+            localData.value.fileUpload.binary = computed(() => fileList.value.map(file => file.binary || null));
         }
 
         provide('_wwFileUpload', {
@@ -243,24 +286,7 @@ export default {
             content: computed(() => props.content || {}),
         });
 
-        const openFileExplorer = () => {
-            if (!isDisabled.value && !isReadonly.value) {
-                fileInput.value.click();
-            }
-        };
-
-        const enableCircleAnimation = computed(() => props.content?.enableCircleAnimation !== false);
-        const circleSize = computed(() => props.content?.circleSize || '80px');
-        const circleColor = computed(() => props.content?.circleColor || safeProgressBarColor.value);
-        const circleOpacity = computed(() => {
-            const opacity = props.content?.circleOpacity;
-            return opacity !== undefined ? opacity : 0.5;
-        });
-        const animationSpeed = computed(() => {
-            const speed = props.content?.animationSpeed;
-            return speed !== undefined ? speed : 0.5; // Half speed by default
-        });
-
+        // Drag and drop animation
         const {
             isDragging,
             mouseX,
@@ -280,11 +306,18 @@ export default {
             dropEnabled: drop,
             circleOpacity,
             animationSpeed,
+            isEditing,
         });
+
+        // Methods
+        const openFileExplorer = () => {
+            if (!isDisabled.value && !isReadonly.value && !isEditing.value) {
+                fileInput.value.click();
+            }
+        };
 
         const handleDrop = async event => {
             const animationHandled = animationHandleDrop(event);
-
             if (!animationHandled || isDisabled.value || isReadonly.value || !drop.value) return;
 
             const items = event.dataTransfer.files;
@@ -301,15 +334,14 @@ export default {
             if (!selectedFiles.length) return;
 
             await processFiles(selectedFiles);
-
             event.target.value = '';
         };
 
         const processFiles = async fileList => {
             isProcessing.value = true;
-
             const filesToProcess = Array.from(fileList);
 
+            // Single mode handling
             if (type.value === 'single') {
                 if (filesToProcess.length > 1) {
                     emit('trigger-event', {
@@ -329,6 +361,7 @@ export default {
                 setFiles([]);
             }
 
+            // Check file count limit for multi mode
             let availableSlots = Infinity;
             if (type.value === 'multi' && maxFiles.value > 0) {
                 availableSlots = maxFiles.value - files.value.length;
@@ -349,6 +382,8 @@ export default {
                         text: { en: `Maximum number of files (${maxFiles.value}) reached` },
                         color: 'warning',
                     });
+
+                    isProcessing.value = false;
                     return;
                 } else if (filesToProcess.length > availableSlots) {
                     emit('trigger-event', {
@@ -367,27 +402,26 @@ export default {
                 }
             }
 
+            // Process valid files
             const limitedFiles = filesToProcess.slice(0, availableSlots);
             const processedFiles = [];
+            const currentTotalSize =
+                files.value && Array.isArray(files.value) ? files.value.reduce((sum, f) => sum + (f.size || 0), 0) : 0;
 
             for (const file of limitedFiles) {
                 const validationResult = validateFile(file, {
                     maxFileSize: maxFileSize.value,
                     minFileSize: minFileSize.value,
                     maxTotalFileSize: maxTotalFileSize.value,
-                    currentTotalSize:
-                        files.value && Array.isArray(files.value)
-                            ? files.value.reduce((sum, f) => sum + (f.size || 0), 0)
-                            : 0,
+                    currentTotalSize,
                     acceptedTypes: acceptedFileTypes.value,
                 });
 
                 if (validationResult.valid) {
                     processingQueue.value.push(file);
-
                     const fileDetails = await getFileDetails(file);
 
-                    // Add a unique ID to the file for stable transitions
+                    // Add unique ID for stable transitions
                     fileDetails.id = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
                     if (exposeBase64.value || exposeBinary.value) {
@@ -400,11 +434,9 @@ export default {
                     }
 
                     processedFiles.push(fileDetails);
-
                     processingQueue.value = processingQueue.value.filter(f => f !== file);
                 } else {
                     console.warn(`File validation failed: ${validationResult.reason}`);
-
                     emit('trigger-event', {
                         name: 'error',
                         event: {
@@ -434,23 +466,20 @@ export default {
                         name: 'change',
                         event: { value: processedFiles },
                     });
+                    isProcessing.value = false;
                 } else {
-                    // For multi mode, add files one by one with a small delay between each
-                    // Add first file right away for immediate feedback
+                    // For multi mode, add files one by one with a small delay for smoother animation
                     const currentFiles = [...files.value];
                     let newFiles = [...currentFiles];
 
-                    // Function to add files one by one for smoother animation
+                    // Function to add files one by one
                     const addNextFile = index => {
-                        // Add the current file
                         newFiles = [...newFiles, processedFiles[index]];
                         setFiles(newFiles);
 
-                        // If there are more files to add, schedule the next one
+                        // If more files to add, schedule the next one
                         if (index < processedFiles.length - 1) {
-                            setTimeout(() => {
-                                addNextFile(index + 1);
-                            }, 150); // Slightly longer delay for smoother height animation
+                            setTimeout(() => addNextFile(index + 1), 150);
                         } else {
                             // All files added, emit the change event
                             emit('trigger-event', {
@@ -461,10 +490,8 @@ export default {
                         }
                     };
 
-                    // Start adding files
-                    setTimeout(() => {
-                        addNextFile(0);
-                    }, 50);
+                    // Start adding files with a small initial delay
+                    setTimeout(() => addNextFile(0), 50);
                     return; // Early return to prevent setting isProcessing to false too early
                 }
             }
@@ -475,7 +502,6 @@ export default {
         const removeFile = index => {
             if (isDisabled.value || isReadonly.value) return;
 
-            // Remove file immediately without animation
             const updatedFiles = [...files.value.filter((_, i) => i !== index)];
             setFiles(updatedFiles);
 
@@ -532,6 +558,7 @@ export default {
             }
         };
 
+        // Register element local context for API access
         wwLib.wwElement.useRegisterElementLocalContext('_wwFileUpload', localData.value.fileUpload, {
             clearFiles: {
                 description: 'Clear all files',
@@ -540,6 +567,7 @@ export default {
             },
         });
 
+        // Watch for state changes to emit appropriate events
         watch(
             isReadonly,
             value => {
@@ -564,39 +592,7 @@ export default {
             { immediate: true }
         );
 
-        const safeDropzoneBorderWidth = computed(() => props.content?.dropzoneBorderWidth || '2px');
-        const safeDropzoneBorderStyle = computed(() => props.content?.dropzoneBorderStyle || 'dashed');
-        const safeDropzoneBorderColor = computed(() => props.content?.dropzoneBorderColor || '#CCCCCC');
-        const safeDropzoneBorderRadius = computed(() => props.content?.dropzoneBorderRadius || '8px');
-        const safeDropzonePadding = computed(() => props.content?.dropzonePadding || '20px');
-        const safeDropzoneMinHeight = computed(() => props.content?.dropzoneMinHeight || '120px');
-        const safeDropzoneBackground = computed(() => props.content?.dropzoneBackground || 'rgba(0, 0, 0, 0.01)');
-        const safeLabelFontSize = computed(() => props.content?.labelFontSize || '16px');
-        const safeLabelFontFamily = computed(() => props.content?.labelFontFamily || 'inherit');
-        const safeLabelFontWeight = computed(() => props.content?.labelFontWeight || 'normal');
-        const safeLabelColor = computed(() => props.content?.labelColor || '#333333');
-        const safeFileDetailsFontSize = computed(() => props.content?.fileDetailsFontSize || '12px');
-        const safeFileDetailsColor = computed(() => props.content?.fileDetailsColor || '#888888');
-        const safeProgressBarColor = computed(() => props.content?.progressBarColor || '#EEEEEE');
-        const safeLabelMarginBottom = computed(() => {
-            const labelMargin = props.content?.labelMargin || '0 0 4px 0';
-            const parts = labelMargin.split(' ');
-            return parts[2] || '4px';
-        });
-        const safeProgressBarBackground = computed(() => {
-            const color = safeProgressBarColor.value;
-            if (!color) return 'rgba(85, 85, 85, 0.05)';
-
-            try {
-                const r = parseInt(color.slice(1, 3), 16) || 85;
-                const g = parseInt(color.slice(3, 5), 16) || 85;
-                const b = parseInt(color.slice(5, 7), 16) || 85;
-                return `rgba(${r}, ${g}, ${b}, 0.05)`;
-            } catch (e) {
-                return 'rgba(85, 85, 85, 0.05)';
-            }
-        });
-
+        // Connect drag animation handlers
         const handleDragOver = animationHandleDragOver;
         const handleDragLeave = animationHandleDragLeave;
         const handleMouseMove = animationHandleMouseMove;
@@ -665,11 +661,11 @@ export default {
             circleEl,
             mouseX,
             mouseY,
-            isDropped,
             targetX,
             targetY,
             isAnimating,
             isProcessing,
+            isEditing,
         };
     },
 };
@@ -701,7 +697,7 @@ export default {
         border-radius: v-bind('safeDropzoneBorderRadius');
         padding: v-bind('safeDropzonePadding');
         min-height: v-bind('safeDropzoneMinHeight');
-        cursor: pointer;
+        cursor: v-bind('isEditing ? "unset" : "pointer"');
         transition: all 0.3s ease;
         isolation: isolate;
 
@@ -830,7 +826,7 @@ export default {
         transition: opacity 0.3s ease-out, transform 0.3s ease-out;
         will-change: transform, opacity;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        backface-visibility: hidden; // Helps with smoother animations
+        backface-visibility: hidden;
     }
 }
 </style>

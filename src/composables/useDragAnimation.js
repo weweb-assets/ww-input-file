@@ -17,6 +17,7 @@ export function useDragAnimation({
     dropEnabled,
     circleOpacity,
     animationSpeed = 0.5,
+    isEditing,
 }) {
     const isDragging = ref(false);
     const mouseX = ref(0);
@@ -31,11 +32,8 @@ export function useDragAnimation({
         if (isAnimating.value) return;
 
         isAnimating.value = true;
-
-        const baseSpringStrength = 0.12;
-        const baseDamping = 0.82;
-        const springStrength = baseSpringStrength * animationSpeed.value;
-        const damping = baseDamping + (1 - animationSpeed.value) * 0.1;
+        const springStrength = 0.12 * animationSpeed.value;
+        const damping = 0.82 + (1 - animationSpeed.value) * 0.1;
 
         let velocityX = 0;
         let velocityY = 0;
@@ -67,10 +65,10 @@ export function useDragAnimation({
     };
 
     const handleDragOver = event => {
-        if (isDisabled.value || isReadonly.value || !dropEnabled.value) return;
+        if (isDisabled.value || isReadonly.value || !dropEnabled.value || isEditing.value) return;
 
         const now = Date.now();
-        if (now - lastMoveTime < 16) return; // Cap at ~60fps
+        if (now - lastMoveTime < 16) return;
         lastMoveTime = now;
 
         event.stopPropagation();
@@ -86,14 +84,14 @@ export function useDragAnimation({
 
             if (dropzoneRef.value) {
                 const rect = dropzoneRef.value.getBoundingClientRect();
+                const entryOffset = 120;
 
+                // Determine entry point from closest edge
                 const distToLeftEdge = targetX.value;
                 const distToRightEdge = rect.width - targetX.value;
                 const distToTopEdge = targetY.value;
                 const distToBottomEdge = rect.height - targetY.value;
-
                 const minDist = Math.min(distToLeftEdge, distToRightEdge, distToTopEdge, distToBottomEdge);
-                const entryOffset = 120;
 
                 if (minDist === distToLeftEdge) {
                     mouseX.value = -entryOffset;
@@ -125,7 +123,6 @@ export function useDragAnimation({
     };
 
     const handleDragLeave = event => {
-        // Prevent false triggers from child elements
         if (dropzoneRef.value && dropzoneRef.value.contains(event.relatedTarget)) {
             return;
         }
@@ -154,11 +151,10 @@ export function useDragAnimation({
     };
 
     const handleDrop = event => {
-        if (isDisabled.value || isReadonly.value || !dropEnabled.value) return false;
+        if (isDisabled.value || isReadonly.value || !dropEnabled.value || isEditing.value) return false;
 
         if (dropzoneRef.value) {
             const rect = dropzoneRef.value.getBoundingClientRect();
-
             mouseX.value = event.clientX - rect.left;
             mouseY.value = event.clientY - rect.top;
             targetX.value = mouseX.value;
@@ -221,7 +217,6 @@ export function useDragAnimation({
         targetX,
         targetY,
         isAnimating,
-
         handleDragOver,
         handleDragLeave,
         handleDrop,

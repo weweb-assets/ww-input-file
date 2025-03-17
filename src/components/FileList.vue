@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import { computed } from 'vue';
 import FileItem from './FileItem.vue';
 
 export default {

@@ -87,7 +87,7 @@ export default {
         },
     },
     emits: ['remove', 'reorder'],
-    setup(props, { emit }) {
+    setup(props) {
         const fileUpload = inject('_wwFileUpload', {
             files: computed(() => []),
             content: computed(() => ({})),
@@ -98,10 +98,7 @@ export default {
         });
 
         const filesCount = computed(() => fileUpload.files.value.length);
-
-        const content = computed(() => {
-            return fileUpload.content?.value || {};
-        });
+        const content = computed(() => fileUpload.content?.value || {});
 
         const fileItemStyles = computed(() => ({
             backgroundColor: content.value?.fileItemBackground || '#fff',
@@ -151,14 +148,11 @@ export default {
 
         const formattedSize = computed(() => {
             const bytes = props.file.size * 1024 * 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-
             if (bytes === 0) return '0 B';
 
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
             const i = Math.floor(Math.log(bytes) / Math.log(1024));
-            const formattedSize = (bytes / Math.pow(1024, i)).toFixed(2);
-
-            return `${formattedSize} ${sizes[i]}`;
+            return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
         });
 
         return {

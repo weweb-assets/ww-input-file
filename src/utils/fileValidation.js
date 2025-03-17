@@ -1,10 +1,7 @@
 export function validateFile(file, options = {}) {
     const { maxFileSize, minFileSize, maxTotalFileSize, currentTotalSize = 0, acceptedTypes = '' } = options;
-
-    // Convert file size from bytes to MB for comparison
     const fileSizeInMB = file.size / (1024 * 1024);
 
-    // Check min file size
     if (minFileSize && fileSizeInMB < minFileSize) {
         return {
             valid: false,
@@ -12,27 +9,19 @@ export function validateFile(file, options = {}) {
                 2
             )} MB) is less than the minimum allowed size (${minFileSize} MB)`,
             constraint: 'MIN_SIZE',
-            details: {
-                minSize: minFileSize,
-                actualSize: fileSizeInMB,
-            },
+            details: { minSize: minFileSize, actualSize: fileSizeInMB },
         };
     }
 
-    // Check max file size
     if (maxFileSize && fileSizeInMB > maxFileSize) {
         return {
             valid: false,
             reason: `File size (${fileSizeInMB.toFixed(2)} MB) exceeds the maximum allowed size (${maxFileSize} MB)`,
             constraint: 'MAX_SIZE',
-            details: {
-                maxSize: maxFileSize,
-                actualSize: fileSizeInMB,
-            },
+            details: { maxSize: maxFileSize, actualSize: fileSizeInMB },
         };
     }
 
-    // Check total file size
     if (maxTotalFileSize && currentTotalSize + fileSizeInMB > maxTotalFileSize) {
         return {
             valid: false,
@@ -49,7 +38,6 @@ export function validateFile(file, options = {}) {
         };
     }
 
-    // Check file type
     if (acceptedTypes && !isFileTypeAccepted(file, acceptedTypes)) {
         return {
             valid: false,
@@ -67,18 +55,12 @@ export function validateFile(file, options = {}) {
 }
 
 function isFileTypeAccepted(file, acceptedTypes) {
-    if (!acceptedTypes) return true;
-
-    if (!file || !file.type) return false;
+    if (!acceptedTypes || !file || !file.type) return !acceptedTypes;
 
     const acceptedTypesArray = acceptedTypes.split(',').map(type => type.trim().toLowerCase());
-
     const typeCategory = file.type.split('/')[0] + '/*';
-    if (acceptedTypesArray.includes(typeCategory)) {
-        return true;
-    }
 
-    if (acceptedTypesArray.includes(file.type.toLowerCase())) {
+    if (acceptedTypesArray.includes(typeCategory) || acceptedTypesArray.includes(file.type.toLowerCase())) {
         return true;
     }
 
