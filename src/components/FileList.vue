@@ -8,7 +8,6 @@
                 :index="index"
                 :is-readonly="isReadonly"
                 :is-disabled="isDisabled"
-                :can-reorder="canReorder"
                 @remove="$emit('remove', index)"
                 @reorder="handleReorder(index, $event)"
             />
@@ -33,10 +32,6 @@ export default {
             type: String,
             default: 'single',
             validator: value => ['single', 'multi'].includes(value),
-        },
-        canReorder: {
-            type: Boolean,
-            default: false,
         },
         isReadonly: {
             type: Boolean,

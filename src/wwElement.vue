@@ -40,11 +40,21 @@
                     <div v-html="iconHTML"></div>
                 </div>
                 <div class="ww-file-upload__text">
-                    <div class="ww-file-upload__label">{{ label }}</div>
-                    <div class="ww-file-upload__info" v-if="hasTypeRestriction">
-                        Allowed: {{ getAllowedTypesLabel() }}
+                    <div class="ww-file-upload__label" :style="labelMessageStyle">{{ labelMessage }}</div>
+                    <div
+                        class="ww-file-upload__info ww-file-upload__extensions-message"
+                        v-if="extensionsMessage"
+                        :style="extensionsMessageStyle"
+                    >
+                        {{ extensionsMessage }}
                     </div>
-                    <div class="ww-file-upload__info" v-if="maxFileSize">Max size: {{ maxFileSize }}MB</div>
+                    <div
+                        class="ww-file-upload__info ww-file-upload__max-file-message"
+                        v-if="maxFileMessage"
+                        :style="maxFileMessageStyle"
+                    >
+                        {{ maxFileMessage }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,7 +80,7 @@
             :accept="acceptedFileTypes"
             :required="required && !hasFiles"
             :disabled="isDisabled || isReadonly"
-            :aria-label="label"
+            :aria-label="labelMessage"
             @change="handleFileSelection"
         />
     </div>
@@ -108,7 +118,6 @@ export default {
 
         const { getIcon } = wwLib.useIcons();
 
-        // Props and Refs
         const fileInput = ref(null);
         const dropzoneEl = ref(null);
         const circleEl = ref(null);
@@ -116,7 +125,10 @@ export default {
         const iconText = ref(null);
         const isProcessing = ref(false);
 
-        // Content properties
+        const extensionsMessage = computed(() => props.content?.extensionsMessage || null);
+        const maxFileMessage = computed(() => props.content?.maxFileMessage || null);
+        const labelMessage = computed(() => props.content?.labelMessage || null);
+
         const type = computed(() => props.content?.type || 'single');
         const reorder = computed(() => props.content?.reorder || false);
         const drop = computed(() => props.content?.drop !== false);
@@ -136,7 +148,6 @@ export default {
         const uploadIconPosition = computed(() => props.content?.uploadIconPosition || 'top');
         const uploadIconSize = computed(() => props.content?.uploadIconSize || '24px');
         const uploadIconMargin = computed(() => props.content?.uploadIconMargin || '8px');
-        const label = computed(() => props.content?.label || 'Upload files');
         const enableCircleAnimation = computed(() => props.content?.enableCircleAnimation !== false);
         const circleSize = computed(() => props.content?.circleSize || '80px');
         const circleColor = computed(() => props.content?.circleColor || safeProgressBarColor.value);
@@ -147,7 +158,6 @@ export default {
             props.content?.animationSpeed !== undefined ? props.content.animationSpeed : 0.5
         );
 
-        // Style properties
         const safeDropzoneBorderWidth = computed(() => props.content?.dropzoneBorderWidth || '2px');
         const safeDropzoneBorderStyle = computed(() => props.content?.dropzoneBorderStyle || 'dashed');
         const safeDropzoneBorderColor = computed(() => props.content?.dropzoneBorderColor || '#CCCCCC');
@@ -180,7 +190,33 @@ export default {
             }
         });
 
-        // Element state
+        // Extensions message styling
+        const extensionsMessageStyle = computed(() => ({
+            fontFamily: props.content?.extensionsMessageFontFamily || 'inherit',
+            fontSize: props.content?.extensionsMessageFontSize || '12px',
+            fontWeight: props.content?.extensionsMessageFontWeight || 'normal',
+            color: props.content?.extensionsMessageColor || '#888888',
+            margin: props.content?.extensionsMessageMargin || '0 0 4px 0',
+        }));
+
+        // Max file message styling
+        const maxFileMessageStyle = computed(() => ({
+            fontFamily: props.content?.maxFileMessageFontFamily || 'inherit',
+            fontSize: props.content?.maxFileMessageFontSize || '12px',
+            fontWeight: props.content?.maxFileMessageFontWeight || 'normal',
+            color: props.content?.maxFileMessageColor || '#888888',
+            margin: props.content?.maxFileMessageMargin || '0 0 4px 0',
+        }));
+
+        // Label message styling
+        const labelMessageStyle = computed(() => ({
+            fontFamily: props.content?.labelFontFamily || 'inherit',
+            fontSize: props.content?.labelFontSize || '16px',
+            fontWeight: props.content?.labelFontWeight || 'normal',
+            color: props.content?.labelColor || '#333333',
+            margin: props.content?.labelMargin || '0 0 4px 0',
+        }));
+
         const isDisabled = computed(() => props.wwElementState.props.disabled || false);
         const isReadonly = computed(() => {
             /* wwEditor:start */
@@ -193,7 +229,6 @@ export default {
                 : props.wwElementState.props.readonly;
         });
 
-        // Files handling
         const { value: files, setValue: setFiles } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
             name: 'value',
@@ -227,9 +262,7 @@ export default {
                     return '';
             }
         });
-        const hasTypeRestriction = computed(() => extensions.value && extensions.value !== 'any');
 
-        // Upload icon
         watch(
             () => uploadIcon.value,
             async icon => {
@@ -258,24 +291,33 @@ export default {
 
         const iconStyle = computed(() => ({ color: uploadIconColor.value }));
 
-        // Local data for element context
         const localData = ref({
             fileUpload: {
                 value: fileList,
-                queue: processingQueue,
-                isUploading: false,
-                uploadProgress: 0,
-                isUploaded: false,
+                isUploading: computed(() => {
+                    if (!fileList.value.length) return false;
+                    return fileList.value.some(file => file.isUploading);
+                }),
+                uploadProgress: computed(() => {
+                    if (!fileList.value.length) return 0;
+                    const sum = fileList.value.reduce((total, file) => total + (file.uploadProgress || 0), 0);
+                    return Math.round(sum / fileList.value.length);
+                }),
+                isUploaded: computed(() => {
+                    if (!fileList.value.length) return false;
+                    return fileList.value.every(file => file.isUploaded);
+                }),
             },
         });
 
-        if (exposeBase64.value) {
-            localData.value.fileUpload.base64 = computed(() => fileList.value.map(file => file.base64 || null));
-        }
-
-        if (exposeBinary.value) {
-            localData.value.fileUpload.binary = computed(() => fileList.value.map(file => file.binary || null));
-        }
+        // Watch for changes in base64/binary exposure to notify users when settings change with existing files
+        watch(
+            [exposeBase64, exposeBinary],
+            async ([newExposeBase64, newExposeBinary], [oldExposeBase64, oldExposeBinary]) => {
+                const base64Changed = newExposeBase64 && !oldExposeBase64;
+                const binaryChanged = newExposeBinary && !oldExposeBinary;
+            }
+        );
 
         provide('_wwFileUpload', {
             files: fileList,
@@ -424,6 +466,7 @@ export default {
                     // Add unique ID for stable transitions
                     fileDetails.id = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
+                    // Process base64 or binary data if needed
                     if (exposeBase64.value || exposeBinary.value) {
                         const processedData = await processFileForExport(file, {
                             base64: exposeBase64.value,
@@ -460,7 +503,6 @@ export default {
 
             if (processedFiles.length > 0) {
                 if (type.value === 'single') {
-                    // For single mode, just replace the files array
                     setFiles(processedFiles);
                     emit('trigger-event', {
                         name: 'change',
@@ -468,20 +510,16 @@ export default {
                     });
                     isProcessing.value = false;
                 } else {
-                    // For multi mode, add files one by one with a small delay for smoother animation
                     const currentFiles = [...files.value];
                     let newFiles = [...currentFiles];
 
-                    // Function to add files one by one
                     const addNextFile = index => {
                         newFiles = [...newFiles, processedFiles[index]];
                         setFiles(newFiles);
 
-                        // If more files to add, schedule the next one
                         if (index < processedFiles.length - 1) {
                             setTimeout(() => addNextFile(index + 1), 150);
                         } else {
-                            // All files added, emit the change event
                             emit('trigger-event', {
                                 name: 'change',
                                 event: { value: newFiles },
@@ -492,7 +530,7 @@ export default {
 
                     // Start adding files with a small initial delay
                     setTimeout(() => addNextFile(0), 50);
-                    return; // Early return to prevent setting isProcessing to false too early
+                    return;
                 }
             }
 
@@ -533,6 +571,27 @@ export default {
             });
         };
 
+        const updateFileProperty = (fileIndex, property, value) => {
+            if (fileIndex < 0 || fileIndex >= files.value.length) return;
+
+            const updatedFiles = [...files.value];
+            updatedFiles[fileIndex] = {
+                ...updatedFiles[fileIndex],
+                [property]: value,
+            };
+
+            setFiles(updatedFiles);
+        };
+
+        const actionUpdateProgress = (fileIndex, progress) => {
+            updateFileProperty(fileIndex, 'uploadProgress', progress);
+        };
+
+        const actionUpdateUploadStatus = (fileIndex, isUploading, isUploaded) => {
+            updateFileProperty(fileIndex, 'isUploading', isUploading);
+            updateFileProperty(fileIndex, 'isUploaded', isUploaded);
+        };
+
         const getAllowedTypesLabel = () => {
             switch (extensions.value) {
                 case 'image':
@@ -558,16 +617,66 @@ export default {
             }
         };
 
-        // Register element local context for API access
         wwLib.wwElement.useRegisterElementLocalContext('_wwFileUpload', localData.value.fileUpload, {
             clearFiles: {
                 description: 'Clear all files',
                 method: clearFiles,
                 editor: { label: 'Clear Files', group: 'File Upload', icon: 'trash' },
             },
+            updateProgress: {
+                description: 'Update the progress of the upload',
+                method: actionUpdateProgress,
+                editor: {
+                    label: 'Update Progress',
+                    group: 'File Upload',
+                    icon: 'workflow',
+                    args: [
+                        {
+                            name: 'fileIndex',
+                            type: 'number',
+                            description: 'The index of the file to update the progress for',
+                            required: true,
+                        },
+                        {
+                            name: 'progress',
+                            type: 'number',
+                            description: 'The progress of the upload',
+                            required: true,
+                        },
+                    ],
+                },
+            },
+            updateUploadStatus: {
+                description: 'Update the upload status of the file',
+                method: actionUpdateUploadStatus,
+                editor: {
+                    label: 'Update Upload Status',
+                    group: 'File Upload',
+                    icon: 'workflow',
+                    args: [
+                        {
+                            name: 'fileIndex',
+                            type: 'number',
+                            description: 'The index of the file to update the upload status for',
+                            required: true,
+                        },
+                        {
+                            name: 'isUploading',
+                            type: 'boolean',
+                            description: 'Whether the file is uploading',
+                            required: true,
+                        },
+                        {
+                            name: 'isUploaded',
+                            type: 'boolean',
+                            description: 'Whether the file is uploaded',
+                            required: true,
+                        },
+                    ],
+                },
+            },
         });
 
-        // Watch for state changes to emit appropriate events
         watch(
             isReadonly,
             value => {
@@ -605,7 +714,8 @@ export default {
             isDisabled,
             isReadonly,
             acceptedFileTypes,
-            hasTypeRestriction,
+            extensionsMessage,
+            maxFileMessage,
             openFileExplorer,
             handleDragOver,
             handleDragLeave,
@@ -618,7 +728,10 @@ export default {
             iconStyle,
             uploadIconPosition,
             handleMouseMove,
-
+            extensionsMessageStyle,
+            maxFileMessageStyle,
+            labelMessage,
+            labelMessageStyle,
             type,
             reorder,
             drop,
@@ -634,7 +747,6 @@ export default {
             uploadIconColor,
             uploadIconSize,
             uploadIconMargin,
-            label,
             enableCircleAnimation,
             circleSize,
             circleColor,
@@ -780,17 +892,8 @@ export default {
         }
     }
 
-    &__label {
-        font-size: v-bind('safeLabelFontSize');
-        font-family: v-bind('safeLabelFontFamily');
-        font-weight: v-bind('safeLabelFontWeight');
-        margin-bottom: v-bind('safeLabelMarginBottom');
-        color: v-bind('safeLabelColor');
-    }
-
     &__info {
-        font-size: v-bind('safeFileDetailsFontSize');
-        color: v-bind('safeFileDetailsColor');
+        display: block;
     }
 
     &--dragging {

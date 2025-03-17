@@ -8,43 +8,12 @@
     >
         <div class="ww-file-item__info">
             <div class="ww-file-item__name" :style="fileNameStyles">{{ file.name }}</div>
-            <div class="ww-file-item__details" :style="fileDetailsStyles">
+            <div class="ww-file-item__details" :style="fileDetailsStyles" v-if="showFileInfo">
                 <span>{{ formattedSize }}</span>
-                <span v-if="file.uploadProgress !== undefined">
-                    • {{ file.isUploaded ? 'Uploaded' : `Uploading ${file.uploadProgress}%` }}
-                </span>
-            </div>
-            <div
-                v-if="file.isUploading && !file.isUploaded"
-                class="ww-file-item__progress"
-                :style="progressContainerStyles"
-            >
-                <div class="ww-file-item__progress-bar" :style="progressBarStyles"></div>
+                <span v-if="file.uploadProgress !== undefined"> • {{ `${file.uploadProgress}%` }} </span>
             </div>
         </div>
         <div class="ww-file-item__actions">
-            <template v-if="canReorder">
-                <button
-                    type="button"
-                    class="ww-file-item__btn ww-file-item__btn--up"
-                    :disabled="index === 0 || isDisabled || isReadonly"
-                    @click="$emit('reorder', 'up')"
-                    :style="actionButtonStyles"
-                    aria-label="Move file up"
-                >
-                    <div class="fas fa-arrow-up"></div>
-                </button>
-                <button
-                    type="button"
-                    class="ww-file-item__btn ww-file-item__btn--down"
-                    :disabled="index === filesCount - 1 || isDisabled || isReadonly"
-                    @click="$emit('reorder', 'down')"
-                    :style="actionButtonStyles"
-                    aria-label="Move file down"
-                >
-                    <div class="fas fa-arrow-down"></div>
-                </button>
-            </template>
             <button
                 v-if="!isReadonly"
                 type="button"
@@ -81,10 +50,6 @@ export default {
             type: Boolean,
             default: false,
         },
-        canReorder: {
-            type: Boolean,
-            default: false,
-        },
     },
     emits: ['remove', 'reorder'],
     setup(props) {
@@ -99,6 +64,7 @@ export default {
 
         const filesCount = computed(() => fileUpload.files.value.length);
         const content = computed(() => fileUpload.content?.value || {});
+        const showFileInfo = computed(() => content.value?.showFileInfo);
 
         const fileItemStyles = computed(() => ({
             backgroundColor: content.value?.fileItemBackground || '#fff',
@@ -121,20 +87,6 @@ export default {
             fontSize: content.value?.fileDetailsFontSize || '12px',
             fontWeight: content.value?.fileDetailsFontWeight || 'normal',
             color: content.value?.fileDetailsColor || '#888',
-        }));
-
-        const progressContainerStyles = computed(() => ({
-            height: content.value?.progressBarHeight || '4px',
-            backgroundColor: content.value?.progressBarBackground || '#eee',
-            borderRadius: content.value?.progressBarBorderRadius || '2px',
-        }));
-
-        const progressBarStyles = computed(() => ({
-            width: `${props.file.uploadProgress || 0}%`,
-            height: '100%',
-            backgroundColor: content.value?.progressBarColor || '#555',
-            borderRadius: content.value?.progressBarBorderRadius || '2px',
-            transition: 'width 0.3s ease',
         }));
 
         const actionButtonStyles = computed(() => ({
@@ -165,6 +117,7 @@ export default {
             progressBarStyles,
             actionButtonStyles,
             content,
+            showFileInfo,
         };
     },
 };
@@ -217,22 +170,6 @@ export default {
     &__details {
         font-size: v-bind('content?.fileDetailsFontSize || "12px"');
         color: v-bind('content?.fileDetailsColor || "#888"');
-    }
-
-    &__progress {
-        margin-top: 6px;
-        height: v-bind('content?.progressBarHeight || "4px"');
-        width: 100%;
-        background-color: v-bind('content?.progressBarBackground || "#eee"');
-        border-radius: v-bind('content?.progressBarBorderRadius || "2px"');
-        overflow: hidden;
-    }
-
-    &__progress-bar {
-        height: 100%;
-        background-color: v-bind('content?.progressBarColor || "#555"');
-        border-radius: v-bind('content?.progressBarBorderRadius || "2px"');
-        transition: width 0.3s ease;
     }
 
     &__actions {

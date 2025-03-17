@@ -15,6 +15,7 @@ Properties:
 -   `minFileSize`: `number` - Minimum file size in MB. Default: `0`
 -   `maxTotalFileSize`: `number` - Maximum total size for all files in MB. Default: `50`
 -   `maxFiles`: `number` - Maximum number of files allowed in multi-file mode. Default: `10`
+-   `showFileInfo`: `boolean` - Shows file information (size, type). Default: `true`
 -   `required`: `boolean` - Makes the file upload field required. Default: `false`
 -   `readonly`: `boolean` - Makes the component read-only. Default: `false`
 -   `extensions`: `'any' | 'image' | 'video' | 'audio' | 'pdf' | 'csv' | 'excel' | 'word' | 'json' | 'custom'` - Allowed file types. Default: `'any'`
@@ -25,7 +26,9 @@ Properties:
 -   `showUploadIcon`: `boolean` - Shows the upload icon. Default: `true`
 -   `uploadIcon`: `string` - Icon to use for upload. Default: `'upload'`
 -   `uploadIconPosition`: `'top' | 'right' | 'bottom' | 'left'` - Position of the upload icon. Default: `'top'`
--   `label`: `string` - Text label for the upload area. Default: `'Upload files'`
+-   `labelMessage`: `string` - Text label for the upload area. Default: `'Drop files here or click to upload'`
+-   `extensionsMessage`: `string` - Message showing allowed extensions. Default: `'Allowed file types: {extensions}'`
+-   `maxFileMessage`: `string` - Message showing maximum file size. Default: `'Max file size: {maxFileSize} MB'`
 
 Style Properties:
 
@@ -44,6 +47,16 @@ Style Properties:
 -   `labelFontWeight`: `string` - Font weight for the label. Default: `'normal'`
 -   `labelColor`: `string` - Color for the label. Default: `'#333333'`
 -   `labelMargin`: `string` - Margin for the label. Default: `'0 0 4px 0'`
+-   `extensionsMessageFontFamily`: `string` - Font family for extensions message. Default: `'inherit'`
+-   `extensionsMessageFontSize`: `string` - Font size for extensions message. Default: `'12px'`
+-   `extensionsMessageFontWeight`: `string` - Font weight for extensions message. Default: `400`
+-   `extensionsMessageColor`: `string` - Color for extensions message. Default: `'#888888'`
+-   `extensionsMessageMargin`: `string` - Margin for extensions message. Default: `'0 0 4px 0'`
+-   `maxFileMessageFontFamily`: `string` - Font family for max file message. Default: `'inherit'`
+-   `maxFileMessageFontSize`: `string` - Font size for max file message. Default: `'12px'`
+-   `maxFileMessageFontWeight`: `string` - Font weight for max file message. Default: `400`
+-   `maxFileMessageColor`: `string` - Color for max file message. Default: `'#888888'`
+-   `maxFileMessageMargin`: `string` - Margin for max file message. Default: `'0 0 4px 0'`
 -   `fileItemBackground`: `string` - Background color for file items. Default: `'#FFFFFF'`
 -   `fileItemBorderColor`: `string` - Border color for file items. Default: `'#EEEEEE'`
 -   `fileItemBorderRadius`: `string` - Border radius for file items. Default: `'6px'`
@@ -70,15 +83,11 @@ Style Properties:
 -   `actionButtonRemoveHoverColor`: `string` - Color for remove button on hover. Default: `'#999999'`
 -   `actionButtonBorderRadius`: `string` - Border radius for action buttons. Default: `'4px'`
 -   `actionButtonMargin`: `string` - Margin for action buttons. Default: `'0 0 0 4px'`
--   `progressBarHeight`: `string` - Height for the progress bar. Default: `'4px'`
--   `progressBarBackground`: `string` - Background color for the progress bar. Default: `'#EEEEEE'`
--   `progressBarColor`: `string` - Fill color for the progress bar. Default: `'#555555'`
--   `progressBarBorderRadius`: `string` - Border radius for the progress bar. Default: `'2px'`
 
 Animation Properties:
 
 -   `enableCircleAnimation`: `boolean` - Enables circle animation during drag and drop. Default: `true`
--   `circleSize`: `string` - Size of the animation circle. Default: `'80px'`
+-   `circleSize`: `string` - Size of the animation circle. Default: `'180px'`
 -   `circleColor`: `string` - Color of the animation circle. Default: `'#EEEEEE'`
 -   `circleOpacity`: `number` - Opacity of the animation circle. Default: `0.5`
 -   `animationSpeed`: `number` - Speed of the animation. Default: `0.5`
@@ -86,11 +95,15 @@ Animation Properties:
 Events:
 
 -   `change`: {value: fileArray} - Triggered when files are added or removed
+-   `initValueChange`: {value: fileArray} - Triggered when initial value changes
 -   `error`: {code: errorCode, data: errorData} - Triggered when file validation fails
 
 Actions:
 
 -   `clearFiles`: Clears all files from the component
+-   `startUploading`: Starts the upload process for all files
+-   `updateProgress`: Updates the progress of a specific file's upload
+-   `updateUploadStatus`: Updates the upload status of a specific file
 
 Variables:
 
@@ -105,13 +118,16 @@ Variables:
     -   `isUploaded`: boolean - Whether the file has been uploaded
     -   `base64`: string - Base64 representation of the file (if exposeBase64 is true)
     -   `binary`: ArrayBuffer - Binary representation of the file (if exposeBinary is true)
+    -   `id`: string - Unique ID for the file (for stable transitions)
 
 Special features:
 
--   Interactive drag-and-drop with fluid animation
+-   Interactive drag-and-drop with fluid animation effect
+-   Customizable circle animation during drag and drop operations
 -   Visual feedback during file upload with progress indicator
 -   File type filtering with multiple preset options
--   File size validation with configurable limits
+-   File size validation with configurable minimum and maximum limits
+-   Total file size limit for multiple file uploads
 -   Comprehensive styling options for all component parts
 -   Support for reordering files in multi-file mode
 -   Ability to expose file contents as Base64 or binary data
@@ -119,3 +135,5 @@ Special features:
 -   Accessibility support with ARIA attributes
 -   Support for single and multiple file upload modes
 -   Custom styling for hover and active states
+-   Detailed file information display
+-   Control over animation speed and appearance

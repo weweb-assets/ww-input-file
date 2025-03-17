@@ -11,6 +11,7 @@ export default {
             'minFileSize',
             'maxTotalFileSize',
             'maxFiles',
+            'showFileInfo',
             'required',
             'readonly',
             'extensions',
@@ -42,7 +43,31 @@ export default {
                 'uploadIconPosition',
             ],
             // Label properties
-            ['labelTitle', 'label', 'labelFontFamily', 'labelFontSize', 'labelFontWeight', 'labelColor', 'labelMargin'],
+            [
+                'labelTitle',
+                'labelMessage',
+                'labelFontFamily',
+                'labelFontSize',
+                'labelFontWeight',
+                'labelColor',
+                'labelMargin',
+            ],
+            // Info messages properties
+            [
+                'infoMessagesTitle',
+                'extensionsMessage',
+                'extensionsMessageFontFamily',
+                'extensionsMessageFontSize',
+                'extensionsMessageFontWeight',
+                'extensionsMessageColor',
+                'extensionsMessageMargin',
+                'maxFileMessage',
+                'maxFileMessageFontFamily',
+                'maxFileMessageFontSize',
+                'maxFileMessageFontWeight',
+                'maxFileMessageColor',
+                'maxFileMessageMargin',
+            ],
             // File list properties
             [
                 'fileListTitle',
@@ -82,14 +107,6 @@ export default {
                 'actionButtonRemoveHoverColor',
                 'actionButtonBorderRadius',
                 'actionButtonMargin',
-            ],
-            // Progress bar properties
-            [
-                'progressTitle',
-                'progressBarHeight',
-                'progressBarBackground',
-                'progressBarColor',
-                'progressBarBorderRadius',
             ],
             // Circle animation properties
             [
@@ -137,14 +154,50 @@ export default {
             action: 'actionStartUploading',
             args: [],
         },
+        {
+            label: { en: 'Update Progress' },
+            action: 'actionUpdateProgress',
+            args: [
+                {
+                    name: 'fileIndex',
+                    type: 'number',
+                    description: 'The index of the file to update the progress for',
+                    required: true,
+                },
+                {
+                    name: 'progress',
+                    type: 'number',
+                    description: 'The progress of the upload',
+                    required: true,
+                },
+            ],
+        },
+        {
+            label: { en: 'Update Upload Status' },
+            action: 'actionUpdateUploadStatus',
+            args: [
+                {
+                    name: 'fileIndex',
+                    type: 'number',
+                    description: 'The index of the file to update the upload status for',
+                    required: true,
+                },
+                {
+                    name: 'isUploading',
+                    type: 'boolean',
+                    description: 'Whether the file is uploading',
+                    required: true,
+                },
+                {
+                    name: 'isUploaded',
+                    type: 'boolean',
+                    description: 'Whether the file is uploaded',
+                    required: true,
+                },
+            ],
+        },
     ],
     properties: {
-        // ======== GENERAL SETTINGS ========
-        settingsTitle: {
-            type: 'Title',
-            label: { en: 'Settings' },
-            section: 'settings',
-        },
         type: {
             label: { en: 'Upload type' },
             type: 'TextSelect',
@@ -242,6 +295,12 @@ export default {
                 tooltip: 'A number that defines the maximum number of files allowed: `10`',
             },
             /* wwEditor:end */
+        },
+        showFileInfo: {
+            label: { en: 'Show file info' },
+            type: 'OnOff',
+            section: 'settings',
+            defaultValue: true,
         },
         required: {
             label: { en: 'Required' },
@@ -545,15 +604,14 @@ export default {
             label: { en: 'Label' },
             section: 'design',
         },
-        label: {
-            label: { en: 'Label text' },
+        labelMessage: {
+            label: { en: 'Label' },
             type: 'Text',
-            section: 'design',
-            defaultValue: 'Upload files',
+            defaultValue: 'Drop files here or click to upload',
             /* wwEditor:start */
             bindingValidation: {
                 type: 'string',
-                tooltip: 'A string that defines the upload area label: `"Upload files"`',
+                tooltip: 'A string that defines the label message: `"Drop files here or click to upload"`',
             },
             /* wwEditor:end */
         },
@@ -612,6 +670,160 @@ export default {
         },
         labelMargin: {
             label: { en: 'Margin' },
+            type: 'Spacing',
+            section: 'design',
+            defaultValue: '0 0 4px 0',
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+
+        // ======== INFO MESSAGES PROPERTIES ========
+        infoMessagesTitle: {
+            type: 'Title',
+            label: { en: 'Info Messages' },
+            section: 'design',
+        },
+        extensionsMessage: {
+            label: { en: 'Extensions message' },
+            type: 'Text',
+            defaultValue: 'Allowed file types: {extensions}',
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip:
+                    'A string that defines the message to display when an invalid file type is uploaded: `"Allowed file types: {extensions}"`',
+            },
+            /* wwEditor:end */
+        },
+        extensionsMessageFontFamily: {
+            label: { en: 'Extensions message font family' },
+            type: 'FontFamily',
+            section: 'design',
+            defaultValue: null,
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        extensionsMessageFontSize: {
+            label: { en: 'Extensions message font size' },
+            type: 'Length',
+            section: 'design',
+            options: {
+                unitChoices: [
+                    { value: 'px', label: 'px', min: 8, max: 64 },
+                    { value: 'em', label: 'em', min: 0.5, max: 4 },
+                    { value: 'rem', label: 'rem', min: 0.5, max: 4 },
+                ],
+            },
+            defaultValue: '12px',
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        extensionsMessageFontWeight: {
+            label: { en: 'Extensions message font weight' },
+            type: 'TextSelect',
+            section: 'design',
+            options: {
+                options: [
+                    { value: null, label: { en: 'Default' } },
+                    { value: 300, label: { en: '300 - Light' } },
+                    { value: 400, label: { en: '400 - Regular' } },
+                    { value: 500, label: { en: '500 - Medium' } },
+                    { value: 600, label: { en: '600 - Semi Bold' } },
+                    { value: 700, label: { en: '700 - Bold' } },
+                ],
+            },
+            defaultValue: 400,
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        extensionsMessageColor: {
+            label: { en: 'Extensions message color' },
+            type: 'Color',
+            section: 'design',
+            defaultValue: '#888888',
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        extensionsMessageMargin: {
+            label: { en: 'Extensions message margin' },
+            type: 'Spacing',
+            section: 'design',
+            defaultValue: '0 0 4px 0',
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        maxFileMessage: {
+            label: { en: 'Max file message' },
+            type: 'Text',
+            defaultValue: 'Max file size: {maxFileSize} MB',
+            /* wwEditor:start */
+            bindingValidation: {
+                type: 'string',
+                tooltip: 'A string that defines the max file message: `"Max file size: {maxFileSize} MB"`',
+            },
+            /* wwEditor:end */
+        },
+        maxFileMessageFontFamily: {
+            label: { en: 'Max file message font family' },
+            type: 'FontFamily',
+            section: 'design',
+            defaultValue: null,
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        maxFileMessageFontSize: {
+            label: { en: 'Max file message font size' },
+            type: 'Length',
+            section: 'design',
+            options: {
+                unitChoices: [
+                    { value: 'px', label: 'px', min: 8, max: 64 },
+                    { value: 'em', label: 'em', min: 0.5, max: 4 },
+                    { value: 'rem', label: 'rem', min: 0.5, max: 4 },
+                ],
+            },
+            defaultValue: '12px',
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        maxFileMessageFontWeight: {
+            label: { en: 'Max file message font weight' },
+            type: 'TextSelect',
+            section: 'design',
+            options: {
+                options: [
+                    { value: null, label: { en: 'Default' } },
+                    { value: 300, label: { en: '300 - Light' } },
+                    { value: 400, label: { en: '400 - Regular' } },
+                    { value: 500, label: { en: '500 - Medium' } },
+                    { value: 600, label: { en: '600 - Semi Bold' } },
+                    { value: 700, label: { en: '700 - Bold' } },
+                ],
+            },
+            defaultValue: 400,
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        maxFileMessageColor: {
+            label: { en: 'Max file message color' },
+            type: 'Color',
+            section: 'design',
+            defaultValue: '#888888',
+            classes: true,
+            states: true,
+            responsive: true,
+        },
+        maxFileMessageMargin: {
+            label: { en: 'Max file message margin' },
             type: 'Spacing',
             section: 'design',
             defaultValue: '0 0 4px 0',
@@ -933,55 +1145,6 @@ export default {
             type: 'Spacing',
             section: 'design',
             defaultValue: '0 0 0 4px',
-            classes: true,
-            states: true,
-            responsive: true,
-        },
-
-        // ======== PROGRESS BAR PROPERTIES ========
-        progressTitle: {
-            type: 'Title',
-            label: { en: 'Progress Bar' },
-            section: 'design',
-        },
-        progressBarHeight: {
-            label: { en: 'Height' },
-            type: 'Length',
-            section: 'design',
-            options: {
-                unitChoices: [{ value: 'px', label: 'px', min: 1, max: 20 }],
-            },
-            defaultValue: '4px',
-            classes: true,
-            states: true,
-            responsive: true,
-        },
-        progressBarBackground: {
-            label: { en: 'Background color' },
-            type: 'Color',
-            section: 'design',
-            defaultValue: '#EEEEEE',
-            classes: true,
-            states: true,
-            responsive: true,
-        },
-        progressBarColor: {
-            label: { en: 'Fill color' },
-            type: 'Color',
-            section: 'design',
-            defaultValue: '#EEEEEE',
-            classes: true,
-            states: true,
-            responsive: true,
-        },
-        progressBarBorderRadius: {
-            label: { en: 'Border radius' },
-            type: 'Length',
-            section: 'design',
-            options: {
-                unitChoices: [{ value: 'px', label: 'px', min: 0, max: 20 }],
-            },
-            defaultValue: '2px',
             classes: true,
             states: true,
             responsive: true,
