@@ -233,7 +233,7 @@ export default {
             uid: props.uid,
             name: 'value',
             defaultValue: [],
-            type: 'array',
+            type: 'file',
         });
 
         const fileList = computed(() => (Array.isArray(files.value) ? files.value : []));
