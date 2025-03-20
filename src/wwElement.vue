@@ -226,8 +226,18 @@ export default {
             uid: props.uid,
             name: 'value',
             defaultValue: [],
-            type: 'file',
+            type: 'array',
+            resettable: true,
         });
+
+        // wwLib.wwVariable.useComponentVariable({
+        //     uid: props.uid,
+        //     name: 'progress',
+        //     defaultValue: 0,
+        //     componentType: 'element',
+        //     type: 'number',
+        //     readonly: true,
+        // });
 
         const fileList = computed(() => (Array.isArray(files.value) ? files.value : []));
         const hasFiles = computed(() => fileList.value.length > 0);
