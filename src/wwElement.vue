@@ -226,7 +226,7 @@ export default {
             uid: props.uid,
             name: 'value',
             defaultValue: [],
-            type: 'array',
+            type: 'file',
             resettable: true,
         });
 
