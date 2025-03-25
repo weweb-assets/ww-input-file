@@ -161,7 +161,7 @@ export default {
         left: 0;
         height: 100%;
         z-index: 0;
-        transition: width 0.3s ease;
+        transition: width 1.2s ease;
         opacity: 0.2;
     }
 
