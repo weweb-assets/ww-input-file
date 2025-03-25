@@ -231,9 +231,9 @@ export default {
             type: 'file',
         });
 
-        wwLib.wwVariable.useComponentVariable({
+        const { value: status } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
-            name: 'progresses',
+            name: 'status',
             defaultValue: {},
             type: 'any',
         });

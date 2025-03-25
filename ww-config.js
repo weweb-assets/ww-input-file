@@ -150,24 +150,6 @@ export default {
             args: [],
         },
         {
-            label: { en: 'Update Progress' },
-            action: 'actionUpdateProgress',
-            args: [
-                {
-                    name: 'fileIndex',
-                    type: 'number',
-                    description: 'The index of the file to update the progress for',
-                    required: true,
-                },
-                {
-                    name: 'progress',
-                    type: 'number',
-                    description: 'The progress of the upload',
-                    required: true,
-                },
-            ],
-        },
-        {
             label: { en: 'Update Upload Status' },
             action: 'actionUpdateUploadStatus',
             args: [
@@ -210,20 +192,6 @@ export default {
                 type: 'string',
                 enum: ['single', 'multi'],
                 tooltip: 'A string that defines the upload type: `"single" | "multi"`',
-            },
-            /* wwEditor:end */
-        },
-        reorder: {
-            label: { en: 'Allow reordering' },
-            type: 'OnOff',
-            section: 'settings',
-            defaultValue: false,
-            hidden: content => content.type !== 'multi',
-            bindable: true,
-            /* wwEditor:start */
-            bindingValidation: {
-                type: 'boolean',
-                tooltip: 'A boolean that defines if files can be reordered: `true | false`',
             },
             /* wwEditor:end */
         },
