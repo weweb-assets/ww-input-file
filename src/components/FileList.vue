@@ -9,7 +9,6 @@
                 :is-readonly="isReadonly"
                 :is-disabled="isDisabled"
                 @remove="$emit('remove', index)"
-                @reorder="handleReorder(index, $event)"
             />
         </transition-group>
     </div>
@@ -42,19 +41,7 @@ export default {
             default: false,
         },
     },
-    emits: ['remove', 'reorder'],
-    setup(props, { emit }) {
-        const handleReorder = (index, direction) => {
-            const newIndex = direction === 'up' ? index - 1 : index + 1;
-            if (newIndex >= 0 && newIndex < props.files.length) {
-                emit('reorder', index, newIndex);
-            }
-        };
-
-        return {
-            handleReorder,
-        };
-    },
+    emits: ['remove'],
 };
 </script>
 
