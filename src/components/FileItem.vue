@@ -6,12 +6,20 @@
         role="listitem"
         :aria-label="`File: ${file.name}, Size: ${formattedSize}`"
     >
+        <div
+            v-if="status && status.uploadProgress !== undefined"
+            class="ww-file-item__progress"
+            :style="{
+                width: `${Math.min(100, Math.round(status.uploadProgress))}%`,
+                backgroundColor: content.progressBarColor || '#EEEEEE',
+            }"
+        ></div>
         <div class="ww-file-item__info">
             <div class="ww-file-item__name" :style="fileNameStyles">{{ file.name }}</div>
             <div class="ww-file-item__details" :style="fileDetailsStyles" v-if="showFileInfo">
                 <span>{{ formattedSize }}</span>
-                <span v-if="fileStatus && fileStatus.uploadProgress !== undefined">
-                    • {{ `${fileStatus.uploadProgress}%` }}
+                <span v-if="status && status.uploadProgress !== undefined">
+                    • {{ `${Math.round(status.uploadProgress)}%` }}
                 </span>
             </div>
         </div>
@@ -40,6 +48,10 @@ export default {
             type: Object,
             required: true,
         },
+        status: {
+            type: Object,
+            required: true,
+        },
         index: {
             type: Number,
             required: true,
@@ -53,11 +65,10 @@ export default {
             default: false,
         },
     },
-    emits: ['remove', 'reorder'],
+    emits: ['remove'],
     setup(props) {
         const fileUpload = inject('_wwFileUpload', {
             files: computed(() => []),
-            status: computed(() => ({})),
             content: computed(() => ({})),
             isDisabled: computed(() => false),
             isReadonly: computed(() => false),
@@ -69,19 +80,6 @@ export default {
         const content = computed(() => fileUpload.content?.value || {});
         const showFileInfo = computed(() => content.value?.showFileInfo);
 
-        // Get file status from the status variable
-        const fileStatus = computed(() => {
-            const status = fileUpload.status.value;
-            if (!status || !props.file.name || !status[props.file.name]) {
-                return {
-                    uploadProgress: 0,
-                    isUploading: false,
-                    isUploaded: false,
-                };
-            }
-            return status[props.file.name];
-        });
-
         const fileItemStyles = computed(() => ({
             backgroundColor: content.value?.fileItemBackground || '#fff',
             borderColor: content.value?.fileItemBorderColor || '#eee',
@@ -89,6 +87,8 @@ export default {
             padding: content.value?.fileItemPadding || '12px',
             margin: content.value?.fileItemMargin || '0 0 8px 0',
             boxShadow: content.value?.fileItemShadow || '0 2px 4px rgba(0, 0, 0, 0.05)',
+            position: 'relative',
+            overflow: 'hidden',
         }));
 
         const fileNameStyles = computed(() => ({
@@ -115,10 +115,7 @@ export default {
         }));
 
         const formattedSize = computed(() => {
-            // Handle both formatedSize property and size property from direct File object
-            const fileSizeInBytes = props.file.formatedSize
-                ? props.file.formatedSize * 1024 * 1024
-                : props.file.size || 0;
+            const fileSizeInBytes = props.file.size || 0;
 
             if (fileSizeInBytes === 0) return '0 B';
 
@@ -129,7 +126,6 @@ export default {
 
         return {
             formattedSize,
-            fileStatus,
             filesCount,
             fileItemStyles,
             fileNameStyles,
@@ -157,6 +153,17 @@ export default {
     z-index: 1;
     backface-visibility: hidden;
     will-change: transform, opacity;
+    overflow: hidden;
+
+    &__progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 0;
+        transition: width 0.3s ease;
+        opacity: 0.2;
+    }
 
     &:hover {
         border-color: v-bind('content?.fileItemHoverBorderColor || content?.fileItemBorderColor || "#ddd"');
@@ -174,6 +181,8 @@ export default {
     &__info {
         flex: 1;
         min-width: 0;
+        position: relative;
+        z-index: 1;
     }
 
     &__name {
@@ -197,6 +206,8 @@ export default {
         margin-left: 12px;
         opacity: 0.7;
         transition: opacity 0.2s ease;
+        position: relative;
+        z-index: 1;
     }
 
     &:hover &__actions {

@@ -80,6 +80,7 @@ export default {
                 'fileItemHoverBorderColor',
                 'fileItemHoverBackground',
                 'fileItemHoverShadow',
+                'progressBarColor',
             ],
             // File details properties
             [
@@ -876,6 +877,16 @@ export default {
             type: 'Shadows',
             section: 'style',
             defaultValue: '0 2px 4px rgba(0, 0, 0, 0.05)',
+            classes: true,
+            states: true,
+            responsive: true,
+            bindable: true,
+        },
+        progressBarColor: {
+            label: { en: 'Progress bar color' },
+            type: 'Color',
+            section: 'style',
+            defaultValue: '#4CAF50',
             classes: true,
             states: true,
             responsive: true,

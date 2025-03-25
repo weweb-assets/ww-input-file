@@ -5,6 +5,7 @@
                 v-for="(file, index) in files"
                 :key="file.id || `file-${index}-${file.name}-${file.size}`"
                 :file="file"
+                :status="getFileStatus(file)"
                 :index="index"
                 :is-readonly="isReadonly"
                 :is-disabled="isDisabled"
@@ -27,6 +28,10 @@ export default {
             type: Array,
             required: true,
         },
+        status: {
+            type: Object,
+            required: true,
+        },
         type: {
             type: String,
             default: 'single',
@@ -42,6 +47,16 @@ export default {
         },
     },
     emits: ['remove'],
+    setup(props) {
+        const getFileStatus = file => {
+            if (!file?.name || !props.status) return {};
+            return props.status[file.name] || {};
+        };
+
+        return {
+            getFileStatus,
+        };
+    },
 };
 </script>
 

@@ -27,6 +27,7 @@ Properties:
 -   `labelMessage`: `string` - Text label for the upload area. Default: `'Drop files here or click to upload'`
 -   `extensionsMessage`: `string` - Message showing allowed extensions. Default: `'Allowed file types: {extensions}'`
 -   `maxFileMessage`: `string` - Message showing maximum file size. Default: `'Max file size: {maxFileSize} MB'`
+-   `showFileInfo`: `boolean` - Shows file information (size, type). Default: `true`
 
 Style Properties:
 
@@ -69,7 +70,6 @@ Style Properties:
 -   `fileNameFontSize`: `string` - Font size for file names. Default: `'14px'`
 -   `fileNameFontWeight`: `string` - Font weight for file names. Default: `500`
 -   `fileNameColor`: `string` - Color for file names. Default: `'#333333'`
--   `showFileInfo`: `boolean` - Shows file information (size, type). Default: `true`
 -   `fileDetailsFontFamily`: `string` - Font family for file details. Default: `'inherit'`
 -   `fileDetailsFontSize`: `string` - Font size for file details. Default: `'12px'`
 -   `fileDetailsFontWeight`: `string` - Font weight for file details. Default: `'normal'`
@@ -83,6 +83,7 @@ Style Properties:
 -   `actionButtonRemoveHoverColor`: `string` - Color for remove button on hover. Default: `'#999999'`
 -   `actionButtonBorderRadius`: `string` - Border radius for action buttons. Default: `'4px'`
 -   `actionButtonMargin`: `string` - Margin for action buttons. Default: `'0 0 0 4px'`
+-   `progressBarColor`: `string` - Color for the progress bar. Default: `'#4CAF50'`
 
 Animation Properties:
 
@@ -108,17 +109,28 @@ Actions:
 Variables:
 
 -   `value`: array - Array of file objects with properties:
+
     -   `name`: string - File name
-    -   `size`: number - File size in MB
-    -   `type`: string - MIME type of the file
+    -   `size`: number - File size in bytes
+    -   `mimeType`: string - MIME type of the file
     -   `extension`: string - File extension
-    -   `lastModified`: number - Last modified timestamp
-    -   `uploadProgress`: number - Upload progress (0-100)
-    -   `isUploading`: boolean - Whether the file is currently uploading
-    -   `isUploaded`: boolean - Whether the file has been uploaded
     -   `base64`: string - Base64 representation of the file (if exposeBase64 is true)
     -   `binary`: ArrayBuffer - Binary representation of the file (if exposeBinary is true)
     -   `id`: string - Unique ID for the file (for stable transitions)
+
+-   `status`: object - Status information for each file, with file names as keys and objects as values:
+
+    -   `uploadProgress`: number - Upload progress (0-100)
+    -   `isUploading`: boolean - Whether the file is currently uploading
+    -   `isUploaded`: boolean - Whether the file has been uploaded
+
+Local context:
+
+-   `fileUpload`: object - Local context object for element (accessible via wwElement.locals.fileUpload):
+    -   `value`: array - Reference to the file list array
+    -   `isUploading`: boolean - Whether any file is currently uploading
+    -   `uploadProgress`: number - Average upload progress of all files (0-100)
+    -   `isUploaded`: boolean - Whether all files have been uploaded
 
 Special features:
 

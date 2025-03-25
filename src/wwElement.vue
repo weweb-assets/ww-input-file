@@ -57,6 +57,7 @@
         <FileList
             v-if="hasFiles"
             :files="fileList"
+            :status="status"
             :type="type"
             :can-reorder="reorder"
             :is-readonly="isReadonly"
@@ -231,7 +232,7 @@ export default {
             componentType: 'element',
         });
 
-        const { value: status } = wwLib.wwVariable.useComponentVariable({
+        const { value: status, setValue: setStatus } = wwLib.wwVariable.useComponentVariable({
             uid: props.uid,
             name: 'status',
             defaultValue: {},
@@ -240,6 +241,19 @@ export default {
 
         const fileList = computed(() => (Array.isArray(files.value) ? files.value : []));
         const hasFiles = computed(() => fileList.value.length > 0);
+
+        watch([status, fileList], ([newStatus, newFiles]) => {
+            if (newStatus && typeof newStatus === 'object') {
+                const fileNames = newFiles.map(file => file.name);
+                const updatedStatus = Object.fromEntries(
+                    Object.entries(newStatus).filter(([key]) => fileNames.includes(key))
+                );
+
+                if (Object.keys(updatedStatus).length !== Object.keys(newStatus).length) {
+                    setStatus(updatedStatus);
+                }
+            }
+        });
 
         const getFileStatus = file => {
             if (!status.value || !file.name || !status.value[file.name]) {
@@ -252,18 +266,6 @@ export default {
 
             return status.value[file.name];
         };
-
-        const enhancedFileList = computed(() => {
-            return fileList.value.map(file => {
-                const fileStatus = getFileStatus(file);
-                return {
-                    ...file,
-                    uploadProgress: fileStatus.uploadProgress || 0,
-                    isUploading: fileStatus.isUploading || false,
-                    isUploaded: fileStatus.isUploaded || false,
-                };
-            });
-        });
 
         const acceptedFileTypes = computed(() => {
             switch (extensions.value) {
@@ -655,9 +657,10 @@ export default {
         const handleMouseMove = animationHandleMouseMove;
 
         return {
+            status,
             fileInput,
             isDragging,
-            fileList: enhancedFileList,
+            fileList,
             hasFiles,
             isDisabled,
             isReadonly,
