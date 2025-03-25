@@ -114,7 +114,6 @@ export default {
         const fileInput = ref(null);
         const dropzoneEl = ref(null);
         const circleEl = ref(null);
-        const processingQueue = ref([]);
         const iconText = ref(null);
         const isProcessing = ref(false);
 
@@ -491,7 +490,6 @@ export default {
                 });
 
                 if (validationResult.valid) {
-                    processingQueue.value.push(file);
                     const fileDetails = await getFileDetails(file);
 
                     // Add unique ID for stable transitions
@@ -507,8 +505,7 @@ export default {
                         Object.assign(fileDetails, processedData);
                     }
 
-                    processedFiles.push(fileDetails);
-                    processingQueue.value = processingQueue.value.filter(f => f !== file);
+                    processedFiles.push(file);
                 } else {
                     console.warn(`File validation failed: ${validationResult.reason}`);
                     emit('trigger-event', {
