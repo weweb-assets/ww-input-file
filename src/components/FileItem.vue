@@ -10,7 +10,9 @@
             <div class="ww-file-item__name" :style="fileNameStyles">{{ file.name }}</div>
             <div class="ww-file-item__details" :style="fileDetailsStyles" v-if="showFileInfo">
                 <span>{{ formattedSize }}</span>
-                <span v-if="fileStatus.uploadProgress !== undefined"> • {{ `${fileStatus.uploadProgress}%` }} </span>
+                <span v-if="fileStatus && fileStatus.uploadProgress !== undefined">
+                    • {{ `${fileStatus.uploadProgress}%` }}
+                </span>
             </div>
         </div>
         <div class="ww-file-item__actions">
@@ -70,7 +72,13 @@ export default {
         // Get file status from the status variable
         const fileStatus = computed(() => {
             const status = fileUpload.status.value;
-            if (!status || !props.file.name) return null;
+            if (!status || !props.file.name || !status[props.file.name]) {
+                return {
+                    uploadProgress: 0,
+                    isUploading: false,
+                    isUploaded: false,
+                };
+            }
             return status[props.file.name];
         });
 
