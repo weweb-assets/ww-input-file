@@ -99,7 +99,7 @@ export default {
         }));
 
         const formattedSize = computed(() => {
-            const bytes = props.file.size * 1024 * 1024;
+            const bytes = props.file.formatedSize * 1024 * 1024;
             if (bytes === 0) return '0 B';
 
             const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
