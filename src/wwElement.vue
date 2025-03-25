@@ -495,7 +495,7 @@ export default {
                         Object.assign(fileDetails, processedData);
                     }
 
-                    processedFiles.push({ ...file, ...fileDetails });
+                    processedFiles.push(file);
                 } else {
                     console.warn(`File validation failed: ${validationResult.reason}`);
                     emit('trigger-event', {
