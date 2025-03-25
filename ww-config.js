@@ -149,30 +149,6 @@ export default {
             action: 'actionClearFiles',
             args: [],
         },
-        {
-            label: { en: 'Update Upload Status' },
-            action: 'actionUpdateUploadStatus',
-            args: [
-                {
-                    name: 'fileIndex',
-                    type: 'number',
-                    description: 'The index of the file to update the upload status for',
-                    required: true,
-                },
-                {
-                    name: 'isUploading',
-                    type: 'boolean',
-                    description: 'Whether the file is uploading',
-                    required: true,
-                },
-                {
-                    name: 'isUploaded',
-                    type: 'boolean',
-                    description: 'Whether the file is uploaded',
-                    required: true,
-                },
-            ],
-        },
     ],
     properties: {
         type: {

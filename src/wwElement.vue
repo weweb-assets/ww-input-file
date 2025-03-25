@@ -229,6 +229,7 @@ export default {
             name: 'value',
             defaultValue: [],
             type: 'file',
+            componentType: 'element',
         });
 
         const { value: status } = wwLib.wwVariable.useComponentVariable({
@@ -240,6 +241,31 @@ export default {
 
         const fileList = computed(() => (Array.isArray(files.value) ? files.value : []));
         const hasFiles = computed(() => fileList.value.length > 0);
+
+        const getFileStatus = file => {
+            if (!status.value || !file.name || !status.value[file.name]) {
+                return {
+                    uploadProgress: 0,
+                    isUploading: false,
+                    isUploaded: false,
+                };
+            }
+
+            return status.value[file.name];
+        };
+
+        const enhancedFileList = computed(() => {
+            return fileList.value.map(file => {
+                const fileStatus = getFileStatus(file);
+                return {
+                    ...file,
+                    uploadProgress: fileStatus.uploadProgress || 0,
+                    isUploading: fileStatus.isUploading || false,
+                    isUploaded: fileStatus.isUploaded || false,
+                };
+            });
+        });
+
         const acceptedFileTypes = computed(() => {
             switch (extensions.value) {
                 case 'image':
@@ -298,16 +324,19 @@ export default {
                 value: fileList,
                 isUploading: computed(() => {
                     if (!fileList.value.length) return false;
-                    return fileList.value.some(file => file.isUploading);
+                    return fileList.value.some(file => getFileStatus(file).isUploading);
                 }),
                 uploadProgress: computed(() => {
                     if (!fileList.value.length) return 0;
-                    const sum = fileList.value.reduce((total, file) => total + (file.uploadProgress || 0), 0);
+                    const sum = fileList.value.reduce((total, file) => {
+                        const fileStatus = getFileStatus(file);
+                        return total + (fileStatus.uploadProgress || 0);
+                    }, 0);
                     return Math.round(sum / fileList.value.length);
                 }),
                 isUploaded: computed(() => {
                     if (!fileList.value.length) return false;
-                    return fileList.value.every(file => file.isUploaded);
+                    return fileList.value.every(file => getFileStatus(file).isUploaded);
                 }),
             },
         });
@@ -573,27 +602,6 @@ export default {
             });
         };
 
-        const updateFileProperty = (fileIndex, property, value) => {
-            if (fileIndex < 0 || fileIndex >= files.value.length) return;
-
-            const updatedFiles = [...files.value];
-            updatedFiles[fileIndex] = {
-                ...updatedFiles[fileIndex],
-                [property]: value,
-            };
-
-            setFiles(updatedFiles);
-        };
-
-        const actionUpdateProgress = (fileIndex, progress) => {
-            updateFileProperty(fileIndex, 'uploadProgress', progress);
-        };
-
-        const actionUpdateUploadStatus = (fileIndex, isUploading, isUploaded) => {
-            updateFileProperty(fileIndex, 'isUploading', isUploading);
-            updateFileProperty(fileIndex, 'isUploaded', isUploaded);
-        };
-
         const getAllowedTypesLabel = () => {
             switch (extensions.value) {
                 case 'image':
@@ -624,58 +632,6 @@ export default {
                 description: 'Clear all files',
                 method: clearFiles,
                 editor: { label: 'Clear Files', group: 'File Upload', icon: 'trash' },
-            },
-            updateProgress: {
-                description: 'Update the progress of the upload',
-                method: actionUpdateProgress,
-                editor: {
-                    label: 'Update Progress',
-                    group: 'File Upload',
-                    icon: 'workflow',
-                    args: [
-                        {
-                            name: 'fileIndex',
-                            type: 'number',
-                            description: 'The index of the file to update the progress for',
-                            required: true,
-                        },
-                        {
-                            name: 'progress',
-                            type: 'number',
-                            description: 'The progress of the upload',
-                            required: true,
-                        },
-                    ],
-                },
-            },
-            updateUploadStatus: {
-                description: 'Update the upload status of the file',
-                method: actionUpdateUploadStatus,
-                editor: {
-                    label: 'Update Upload Status',
-                    group: 'File Upload',
-                    icon: 'workflow',
-                    args: [
-                        {
-                            name: 'fileIndex',
-                            type: 'number',
-                            description: 'The index of the file to update the upload status for',
-                            required: true,
-                        },
-                        {
-                            name: 'isUploading',
-                            type: 'boolean',
-                            description: 'Whether the file is uploading',
-                            required: true,
-                        },
-                        {
-                            name: 'isUploaded',
-                            type: 'boolean',
-                            description: 'Whether the file is uploaded',
-                            required: true,
-                        },
-                    ],
-                },
             },
         });
 
@@ -711,7 +667,7 @@ export default {
         return {
             fileInput,
             isDragging,
-            fileList,
+            fileList: enhancedFileList,
             hasFiles,
             isDisabled,
             isReadonly,
