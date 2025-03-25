@@ -342,6 +342,7 @@ export default {
 
         provide('_wwFileUpload', {
             files: fileList,
+            status: status,
             acceptedTypes: acceptedFileTypes,
             isDisabled,
             isReadonly,

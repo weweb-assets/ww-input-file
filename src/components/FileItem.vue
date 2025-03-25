@@ -10,7 +10,7 @@
             <div class="ww-file-item__name" :style="fileNameStyles">{{ file.name }}</div>
             <div class="ww-file-item__details" :style="fileDetailsStyles" v-if="showFileInfo">
                 <span>{{ formattedSize }}</span>
-                <span v-if="file.uploadProgress !== undefined"> • {{ `${file.uploadProgress}%` }} </span>
+                <span v-if="fileStatus.uploadProgress !== undefined"> • {{ `${fileStatus.uploadProgress}%` }} </span>
             </div>
         </div>
         <div class="ww-file-item__actions">
@@ -55,6 +55,7 @@ export default {
     setup(props) {
         const fileUpload = inject('_wwFileUpload', {
             files: computed(() => []),
+            status: computed(() => ({})),
             content: computed(() => ({})),
             isDisabled: computed(() => false),
             isReadonly: computed(() => false),
@@ -65,6 +66,13 @@ export default {
         const filesCount = computed(() => fileUpload.files.value.length);
         const content = computed(() => fileUpload.content?.value || {});
         const showFileInfo = computed(() => content.value?.showFileInfo);
+
+        // Get file status from the status variable
+        const fileStatus = computed(() => {
+            const status = fileUpload.status.value;
+            if (!status || !props.file.name) return null;
+            return status[props.file.name];
+        });
 
         const fileItemStyles = computed(() => ({
             backgroundColor: content.value?.fileItemBackground || '#fff',
@@ -99,16 +107,21 @@ export default {
         }));
 
         const formattedSize = computed(() => {
-            const bytes = props.file.formatedSize * 1024 * 1024;
-            if (bytes === 0) return '0 B';
+            // Handle both formatedSize property and size property from direct File object
+            const fileSizeInBytes = props.file.formatedSize
+                ? props.file.formatedSize * 1024 * 1024
+                : props.file.size || 0;
+
+            if (fileSizeInBytes === 0) return '0 B';
 
             const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(1024));
-            return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+            const i = Math.floor(Math.log(fileSizeInBytes) / Math.log(1024));
+            return `${(fileSizeInBytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
         });
 
         return {
             formattedSize,
+            fileStatus,
             filesCount,
             fileItemStyles,
             fileNameStyles,
