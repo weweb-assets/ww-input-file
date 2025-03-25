@@ -84,7 +84,7 @@
 import { ref, computed, watch, provide, nextTick } from 'vue';
 import FileList from './components/FileList.vue';
 import { validateFile } from './utils/fileValidation';
-import { processFileForExport, getFileDetails } from './utils/fileProcessing';
+import { processFileForExport } from './utils/fileProcessing';
 import { useDragAnimation } from './composables/useDragAnimation';
 
 export default {
@@ -340,15 +340,6 @@ export default {
             },
         });
 
-        // Watch for changes in base64/binary exposure to notify users when settings change with existing files
-        watch(
-            [exposeBase64, exposeBinary],
-            async ([newExposeBase64, newExposeBinary], [oldExposeBase64, oldExposeBinary]) => {
-                const base64Changed = newExposeBase64 && !oldExposeBase64;
-                const binaryChanged = newExposeBinary && !oldExposeBinary;
-            }
-        );
-
         provide('_wwFileUpload', {
             files: fileList,
             acceptedTypes: acceptedFileTypes,
@@ -433,7 +424,6 @@ export default {
                 setFiles([]);
             }
 
-            // Check file count limit for multi mode
             let availableSlots = Infinity;
             if (type.value === 'multi' && maxFiles.value > 0) {
                 availableSlots = maxFiles.value - files.value.length;
@@ -505,7 +495,7 @@ export default {
                         Object.assign(fileDetails, processedData);
                     }
 
-                    processedFiles.push(file);
+                    processedFiles.push({ ...fileDetails, ...file });
                 } else {
                     console.warn(`File validation failed: ${validationResult.reason}`);
                     emit('trigger-event', {
@@ -522,10 +512,12 @@ export default {
                         },
                     });
 
+                    /* wwEditor:start */
                     wwLib.wwNotification.open({
                         text: { en: validationResult.reason },
                         color: 'error',
                     });
+                    /* wwEditor:end */
                 }
             }
 
