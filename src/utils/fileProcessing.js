@@ -5,14 +5,7 @@ export async function getFileDetails(file) {
     const sizeInMB = file.size / (1024 * 1024);
 
     return {
-        name: file.name,
-        size: Number(sizeInMB.toFixed(2)),
-        mimeType: file.type,
-        extension,
-        lastModified: file.lastModified,
-        uploadProgress: 0,
-        isUploading: false,
-        isUploaded: false,
+        ...file,
     };
 }
 
