@@ -34,7 +34,8 @@ Style Properties:
 -   `dropzoneBorderStyle`: `'solid' | 'dashed' | 'dotted' | 'none'` - Border style for the dropzone. Default: `'dashed'`
 -   `dropzoneBorderWidth`: `string` - Border width for the dropzone. Default: `'2px'`
 -   `dropzoneBorderRadius`: `string` - Border radius for the dropzone. Default: `'8px'`
--   `dropzoneBackground`: `string` - Background color for the dropzone. Default: `'rgba(0, 0, 0, 0.01)'`
+-   `dropzoneBackground`: `string` - Background color for the dropzone. Default: `'rgba(0, 0, 0, 0)'`
+-   `dropzoneBackgroundHover`: `string` - Background color for the dropzone when hover. Default: `'rgba(0, 0, 0, 0.01)'`
 -   `dropzonePadding`: `string` - Padding for the dropzone. Default: `'20px'`
 -   `dropzoneMinHeight`: `string` - Minimum height for the dropzone. Default: `'120px'`
 -   `uploadIconColor`: `string` - Color for the upload icon. Default: `'#666666'`

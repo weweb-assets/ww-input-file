@@ -27,6 +27,7 @@ export default {
                 'dropzoneBorderWidth',
                 'dropzoneBorderRadius',
                 'dropzoneBackground',
+                'dropzoneBackgroundHover',
                 'dropzonePadding',
                 'dropzoneMinHeight',
             ],
@@ -203,6 +204,7 @@ export default {
             },
             section: 'settings',
             defaultValue: 'single',
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'string',
@@ -217,6 +219,7 @@ export default {
             section: 'settings',
             defaultValue: false,
             hidden: content => content.type !== 'multi',
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'boolean',
@@ -229,6 +232,7 @@ export default {
             type: 'OnOff',
             section: 'settings',
             defaultValue: true,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'boolean',
@@ -242,6 +246,7 @@ export default {
             options: { min: 0 },
             section: 'settings',
             defaultValue: 10,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'number',
@@ -255,6 +260,7 @@ export default {
             options: { min: 0 },
             section: 'settings',
             defaultValue: 0,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'number',
@@ -269,6 +275,7 @@ export default {
             section: 'settings',
             defaultValue: 50,
             hidden: content => content.type !== 'multi',
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'number',
@@ -283,6 +290,7 @@ export default {
             section: 'settings',
             defaultValue: 10,
             hidden: content => content.type !== 'multi',
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'number',
@@ -294,12 +302,14 @@ export default {
             label: { en: 'Show file details' },
             type: 'OnOff',
             defaultValue: true,
+            bindable: true,
         },
         required: {
             label: { en: 'Required' },
             type: 'OnOff',
             section: 'settings',
             defaultValue: false,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'boolean',
@@ -340,6 +350,7 @@ export default {
             },
             section: 'settings',
             defaultValue: 'any',
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'string',
@@ -353,6 +364,7 @@ export default {
             section: 'settings',
             hidden: content => content.extensions !== 'custom',
             defaultValue: '',
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'string',
@@ -365,6 +377,7 @@ export default {
             type: 'OnOff',
             section: 'settings',
             defaultValue: false,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'boolean',
@@ -377,6 +390,7 @@ export default {
             type: 'OnOff',
             section: 'settings',
             defaultValue: false,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'boolean',
@@ -389,21 +403,22 @@ export default {
         dropzoneTitle: {
             type: 'Title',
             label: { en: 'Dropzone' },
-            section: 'design',
+            section: 'style',
         },
         dropzoneBorderColor: {
             label: { en: 'Border color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#CCCCCC',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         dropzoneBorderStyle: {
             label: { en: 'Border style' },
             type: 'TextSelect',
-            section: 'design',
+            section: 'style',
             options: {
                 options: [
                     { value: 'solid', label: 'Solid' },
@@ -416,11 +431,12 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         dropzoneBorderWidth: {
             label: { en: 'Border width' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [{ value: 'px', label: 'px', min: 0, max: 10 }],
             },
@@ -428,11 +444,12 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         dropzoneBorderRadius: {
             label: { en: 'Border radius' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 0, max: 100 },
@@ -443,29 +460,42 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         dropzoneBackground: {
             label: { en: 'Background color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: 'rgba(0, 0, 0, 0.01)',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
+        },
+        dropzoneBackgroundHover: {
+            label: { en: 'Background color hover' },
+            type: 'Color',
+            section: 'style',
+            defaultValue: 'rgba(0, 0, 0, 0.01)',
+            classes: true,
+            states: true,
+            responsive: true,
+            bindable: true,
         },
         dropzonePadding: {
             label: { en: 'Padding' },
             type: 'Spacing',
-            section: 'design',
+            section: 'style',
             defaultValue: '20px',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         dropzoneMinHeight: {
             label: { en: 'Min height' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 0, max: 500 },
@@ -476,6 +506,7 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
 
         // ======== ICON PROPERTIES ========
@@ -489,6 +520,7 @@ export default {
             type: 'OnOff',
             section: 'icon',
             defaultValue: true,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'boolean',
@@ -524,6 +556,7 @@ export default {
             section: 'icon',
             defaultValue: 'top',
             hidden: content => !content.showUploadIcon,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'string',
@@ -566,6 +599,7 @@ export default {
             states: true,
             responsive: true,
             hidden: content => !content.showUploadIcon,
+            bindable: true,
         },
         uploadIconMargin: {
             label: { en: 'Margin' },
@@ -576,18 +610,20 @@ export default {
             states: true,
             responsive: true,
             hidden: content => !content.showUploadIcon,
+            bindable: true,
         },
 
         // ======== LABEL PROPERTIES ========
         labelTitle: {
             type: 'Title',
             label: { en: 'Label' },
-            section: 'design',
+            section: 'style',
         },
         labelMessage: {
             label: { en: 'Label' },
             type: 'Text',
             defaultValue: 'Drop files here or click to upload',
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'string',
@@ -598,16 +634,17 @@ export default {
         labelFontFamily: {
             label: { en: 'Font family' },
             type: 'FontFamily',
-            section: 'design',
+            section: 'style',
             defaultValue: null,
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         labelFontSize: {
             label: { en: 'Font size' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 8, max: 64 },
@@ -619,11 +656,12 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         labelFontWeight: {
             label: { en: 'Font weight' },
             type: 'TextSelect',
-            section: 'design',
+            section: 'style',
             options: {
                 options: [
                     { value: null, label: { en: 'Default' } },
@@ -638,36 +676,40 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         labelColor: {
             label: { en: 'Color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#333333',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         labelMargin: {
             label: { en: 'Margin' },
             type: 'Spacing',
-            section: 'design',
+            section: 'style',
             defaultValue: '0 0 4px 0',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
 
         // ======== INFO MESSAGES PROPERTIES ========
         infoMessagesTitle: {
             type: 'Title',
             label: { en: 'Info Messages' },
-            section: 'design',
+            section: 'style',
         },
         extensionsMessage: {
             label: { en: 'Extensions message' },
             type: 'Text',
             defaultValue: 'Allowed file types: {extensions}',
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'string',
@@ -679,16 +721,17 @@ export default {
         extensionsMessageFontFamily: {
             label: { en: 'Extensions message font family' },
             type: 'FontFamily',
-            section: 'design',
+            section: 'style',
             defaultValue: null,
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         extensionsMessageFontSize: {
             label: { en: 'Extensions message font size' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 8, max: 64 },
@@ -700,11 +743,12 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         extensionsMessageFontWeight: {
             label: { en: 'Extensions message font weight' },
             type: 'TextSelect',
-            section: 'design',
+            section: 'style',
             options: {
                 options: [
                     { value: null, label: { en: 'Default' } },
@@ -719,29 +763,33 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         extensionsMessageColor: {
             label: { en: 'Extensions message color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#888888',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         extensionsMessageMargin: {
             label: { en: 'Extensions message margin' },
             type: 'Spacing',
-            section: 'design',
+            section: 'style',
             defaultValue: '0 0 4px 0',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         maxFileMessage: {
             label: { en: 'Max file message' },
             type: 'Text',
             defaultValue: 'Max file size: {maxFileSize} MB',
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'string',
@@ -752,16 +800,17 @@ export default {
         maxFileMessageFontFamily: {
             label: { en: 'Max file message font family' },
             type: 'FontFamily',
-            section: 'design',
+            section: 'style',
             defaultValue: null,
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         maxFileMessageFontSize: {
             label: { en: 'Max file message font size' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 8, max: 64 },
@@ -773,11 +822,12 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         maxFileMessageFontWeight: {
             label: { en: 'Max file message font weight' },
             type: 'TextSelect',
-            section: 'design',
+            section: 'style',
             options: {
                 options: [
                     { value: null, label: { en: 'Default' } },
@@ -792,54 +842,59 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         maxFileMessageColor: {
             label: { en: 'Max file message color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#888888',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         maxFileMessageMargin: {
             label: { en: 'Max file message margin' },
             type: 'Spacing',
-            section: 'design',
+            section: 'style',
             defaultValue: '0 0 4px 0',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
 
         // ======== FILE LIST PROPERTIES ========
         fileListTitle: {
             type: 'Title',
             label: { en: 'File List' },
-            section: 'design',
+            section: 'style',
         },
         fileItemBackground: {
             label: { en: 'Background color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#FFFFFF',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileItemBorderColor: {
             label: { en: 'Border color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#EEEEEE',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileItemBorderRadius: {
             label: { en: 'Border radius' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 0, max: 100 },
@@ -850,86 +905,94 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileItemPadding: {
             label: { en: 'Padding' },
             type: 'Spacing',
-            section: 'design',
+            section: 'style',
             defaultValue: '12px',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileItemMargin: {
             label: { en: 'Margin' },
             type: 'Spacing',
-            section: 'design',
+            section: 'style',
             defaultValue: '0 0 8px 0',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileItemShadow: {
             label: { en: 'Shadow' },
             type: 'Shadows',
-            section: 'design',
+            section: 'style',
             defaultValue: '0 2px 4px rgba(0, 0, 0, 0.05)',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileItemHoverTitle: {
             type: 'Title',
             label: { en: 'File Item Hover States' },
-            section: 'design',
+            section: 'style',
         },
         fileItemHoverBorderColor: {
             label: { en: 'Hover border color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#DDDDDD',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileItemHoverBackground: {
             label: { en: 'Hover background color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#FFFFFF',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileItemHoverShadow: {
             label: { en: 'Hover shadow' },
             type: 'Shadows',
-            section: 'design',
+            section: 'style',
             defaultValue: '0 2px 4px rgba(0, 0, 0, 0.05)',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
 
         // ======== FILE DETAILS PROPERTIES ========
         fileNameTitle: {
             type: 'Title',
             label: { en: 'File Name' },
-            section: 'design',
+            section: 'style',
         },
         fileNameFontFamily: {
             label: { en: 'Font family' },
             type: 'FontFamily',
-            section: 'design',
+            section: 'style',
             defaultValue: null,
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileNameFontSize: {
             label: { en: 'Font size' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 8, max: 64 },
@@ -941,11 +1004,12 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileNameFontWeight: {
             label: { en: 'Font weight' },
             type: 'TextSelect',
-            section: 'design',
+            section: 'style',
             options: {
                 options: [
                     { value: null, label: { en: 'Default' } },
@@ -960,34 +1024,37 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileNameColor: {
             label: { en: 'Color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#333333',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileDetailsTitle: {
             type: 'Title',
             label: { en: 'File Details' },
-            section: 'design',
+            section: 'style',
         },
         fileDetailsFontFamily: {
             label: { en: 'Font family' },
             type: 'FontFamily',
-            section: 'design',
+            section: 'style',
             defaultValue: null,
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileDetailsFontSize: {
             label: { en: 'Font size' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 8, max: 64 },
@@ -999,11 +1066,12 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileDetailsFontWeight: {
             label: { en: 'Font weight' },
             type: 'TextSelect',
-            section: 'design',
+            section: 'style',
             options: {
                 options: [
                     { value: null, label: { en: 'Default' } },
@@ -1018,27 +1086,29 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         fileDetailsColor: {
             label: { en: 'Color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#888888',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
 
         // ======== ACTION BUTTON PROPERTIES ========
         actionButtonsTitle: {
             type: 'Title',
             label: { en: 'Action Buttons' },
-            section: 'design',
+            section: 'style',
         },
         actionButtonSize: {
             label: { en: 'Size' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 16, max: 64 },
@@ -1050,65 +1120,72 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         actionButtonBackground: {
             label: { en: 'Background color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#FFFFFF',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         actionButtonHoverBackground: {
             label: { en: 'Hover background color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#F8F8F8',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         actionButtonColor: {
             label: { en: 'Icon color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#666666',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         actionButtonBorderColor: {
             label: { en: 'Border color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#EEEEEE',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         actionButtonHoverBorderColor: {
             label: { en: 'Hover border color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#DDDDDD',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         actionButtonRemoveHoverColor: {
             label: { en: 'Remove button hover color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#999999',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         actionButtonBorderRadius: {
             label: { en: 'Border radius' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [
                     { value: 'px', label: 'px', min: 0, max: 100 },
@@ -1119,28 +1196,31 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         actionButtonMargin: {
             label: { en: 'Margin' },
             type: 'Spacing',
-            section: 'design',
+            section: 'style',
             defaultValue: '0 0 0 4px',
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
 
         // ======== CIRCLE ANIMATION PROPERTIES ========
         circleAnimationTitle: {
             type: 'Title',
             label: { en: 'Drag & Drop Animation' },
-            section: 'design',
+            section: 'style',
         },
         enableCircleAnimation: {
             label: { en: 'Enable circle animation' },
             type: 'OnOff',
-            section: 'design',
+            section: 'style',
             defaultValue: true,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'boolean',
@@ -1152,7 +1232,7 @@ export default {
         circleSize: {
             label: { en: 'Circle size' },
             type: 'Length',
-            section: 'design',
+            section: 'style',
             options: {
                 unitChoices: [{ value: 'px', label: 'px', min: 20, max: 500 }],
             },
@@ -1161,11 +1241,12 @@ export default {
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         circleColor: {
             label: { en: 'Circle color' },
             type: 'Color',
-            section: 'design',
+            section: 'style',
             defaultValue: '#EEEEEE',
             hidden: content => !content.enableCircleAnimation,
             classes: true,
@@ -1182,23 +1263,25 @@ export default {
             label: { en: 'Circle opacity' },
             type: 'Number',
             options: { min: 0, max: 1, step: 0.1 },
-            section: 'design',
+            section: 'style',
             defaultValue: 0.5,
             hidden: content => !content.enableCircleAnimation,
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
         },
         animationSpeed: {
             label: { en: 'Animation speed' },
             type: 'Number',
             options: { min: 0.1, max: 2, step: 0.1 },
-            section: 'design',
+            section: 'style',
             defaultValue: 0.5, // Half speed by default
             hidden: content => !content.enableCircleAnimation,
             classes: true,
             states: true,
             responsive: true,
+            bindable: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'number',

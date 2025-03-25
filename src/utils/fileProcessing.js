@@ -7,7 +7,7 @@ export async function getFileDetails(file) {
     return {
         name: file.name,
         size: Number(sizeInMB.toFixed(2)),
-        type: file.type,
+        mimeType: file.type,
         extension,
         lastModified: file.lastModified,
         uploadProgress: 0,

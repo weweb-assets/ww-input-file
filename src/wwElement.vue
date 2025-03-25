@@ -82,7 +82,6 @@
 
 <script>
 import { ref, computed, watch, provide, nextTick } from 'vue';
-import anime from 'animejs/lib/anime.es.js';
 import FileList from './components/FileList.vue';
 import { validateFile } from './utils/fileValidation';
 import { processFileForExport, getFileDetails } from './utils/fileProcessing';
@@ -157,7 +156,10 @@ export default {
         const safeDropzoneBorderRadius = computed(() => props.content?.dropzoneBorderRadius || '8px');
         const safeDropzonePadding = computed(() => props.content?.dropzonePadding || '20px');
         const safeDropzoneMinHeight = computed(() => props.content?.dropzoneMinHeight || '120px');
-        const safeDropzoneBackground = computed(() => props.content?.dropzoneBackground || 'rgba(0, 0, 0, 0.01)');
+        const safeDropzoneBackground = computed(() => props.content?.dropzoneBackground || 'rgba(0, 0, 0, 0)');
+        const safeDropzoneBackgroundHover = computed(
+            () => props.content?.dropzoneBackgroundHover || 'rgba(0, 0, 0, 0.01)'
+        );
         const safeLabelFontSize = computed(() => props.content?.labelFontSize || '16px');
         const safeLabelFontFamily = computed(() => props.content?.labelFontFamily || 'inherit');
         const safeLabelFontWeight = computed(() => props.content?.labelFontWeight || 'normal');
@@ -227,6 +229,13 @@ export default {
             name: 'value',
             defaultValue: [],
             type: 'file',
+        });
+
+        wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'progresses',
+            defaultValue: {},
+            type: 'any',
         });
 
         const fileList = computed(() => (Array.isArray(files.value) ? files.value : []));
@@ -752,6 +761,7 @@ export default {
             safeDropzonePadding,
             safeDropzoneMinHeight,
             safeDropzoneBackground,
+            safeDropzoneBackgroundHover,
             safeLabelFontSize,
             safeLabelFontFamily,
             safeLabelFontWeight,
@@ -797,6 +807,7 @@ export default {
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        background-color: v-bind('safeDropzoneBackground');
         border: v-bind('safeDropzoneBorderWidth') v-bind('safeDropzoneBorderStyle') v-bind('safeDropzoneBorderColor');
         border-radius: v-bind('safeDropzoneBorderRadius');
         padding: v-bind('safeDropzonePadding');
@@ -807,7 +818,7 @@ export default {
 
         &:hover {
             border-color: v-bind('safeDropzoneBorderColor');
-            background-color: v-bind('safeDropzoneBackground');
+            background-color: v-bind('safeDropzoneBackgroundHover');
         }
     }
 
