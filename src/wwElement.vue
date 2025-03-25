@@ -84,7 +84,7 @@
 import { ref, computed, watch, provide, nextTick } from 'vue';
 import FileList from './components/FileList.vue';
 import { validateFile } from './utils/fileValidation';
-import { processFileForExport } from './utils/fileProcessing';
+import { getFileDetails, processFileForExport } from './utils/fileProcessing';
 import { useDragAnimation } from './composables/useDragAnimation';
 
 export default {
