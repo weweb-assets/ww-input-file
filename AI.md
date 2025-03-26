@@ -112,7 +112,7 @@ Variables:
 
     -   `name`: string - File name
     -   `size`: number - File size in bytes
-    -   `mimeType`: string - MIME type of the file
+    -   `type`: string - MIME type of the file
     -   `extension`: string - File extension
     -   `base64`: string - Base64 representation of the file (if exposeBase64 is true)
     -   `binary`: ArrayBuffer - Binary representation of the file (if exposeBinary is true)

@@ -6,7 +6,7 @@ export async function getFileDetails(file) {
     return {
         name: file.name,
         size: file.size,
-        mimeType: file.type,
+        type: file.type,
         extension,
     };
 }
