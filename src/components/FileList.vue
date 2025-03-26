@@ -5,11 +5,11 @@
                 v-for="(file, index) in files"
                 :key="file.id || `file-${index}-${file.name}-${file.size}`"
                 :file="file"
+                :status="getFileStatus(file)"
                 :index="index"
                 :is-readonly="isReadonly"
                 :is-disabled="isDisabled"
                 @remove="$emit('remove', index)"
-                @reorder="handleReorder(index, $event)"
             />
         </transition-group>
     </div>
@@ -28,6 +28,10 @@ export default {
             type: Array,
             required: true,
         },
+        status: {
+            type: Object,
+            required: true,
+        },
         type: {
             type: String,
             default: 'single',
@@ -42,17 +46,15 @@ export default {
             default: false,
         },
     },
-    emits: ['remove', 'reorder'],
-    setup(props, { emit }) {
-        const handleReorder = (index, direction) => {
-            const newIndex = direction === 'up' ? index - 1 : index + 1;
-            if (newIndex >= 0 && newIndex < props.files.length) {
-                emit('reorder', index, newIndex);
-            }
+    emits: ['remove'],
+    setup(props) {
+        const getFileStatus = file => {
+            if (!file?.name || !props.status) return {};
+            return props.status[file.name] || {};
         };
 
         return {
-            handleReorder,
+            getFileStatus,
         };
     },
 };

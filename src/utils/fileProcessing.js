@@ -2,17 +2,12 @@ import { getFileExtension } from './fileValidation';
 
 export async function getFileDetails(file) {
     const extension = getFileExtension(file.name, file.type);
-    const sizeInMB = file.size / (1024 * 1024);
 
     return {
         name: file.name,
-        size: Number(sizeInMB.toFixed(2)),
-        type: file.type,
+        size: file.size,
+        mimeType: file.type,
         extension,
-        lastModified: file.lastModified,
-        uploadProgress: 0,
-        isUploading: false,
-        isUploaded: false,
     };
 }
 

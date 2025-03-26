@@ -57,6 +57,7 @@
         <FileList
             v-if="hasFiles"
             :files="fileList"
+            :status="status"
             :type="type"
             :can-reorder="reorder"
             :is-readonly="isReadonly"
@@ -82,10 +83,9 @@
 
 <script>
 import { ref, computed, watch, provide, nextTick } from 'vue';
-import anime from 'animejs/lib/anime.es.js';
 import FileList from './components/FileList.vue';
 import { validateFile } from './utils/fileValidation';
-import { processFileForExport, getFileDetails } from './utils/fileProcessing';
+import { getFileDetails, processFileForExport } from './utils/fileProcessing';
 import { useDragAnimation } from './composables/useDragAnimation';
 
 export default {
@@ -115,7 +115,6 @@ export default {
         const fileInput = ref(null);
         const dropzoneEl = ref(null);
         const circleEl = ref(null);
-        const processingQueue = ref([]);
         const iconText = ref(null);
         const isProcessing = ref(false);
 
@@ -157,7 +156,10 @@ export default {
         const safeDropzoneBorderRadius = computed(() => props.content?.dropzoneBorderRadius || '8px');
         const safeDropzonePadding = computed(() => props.content?.dropzonePadding || '20px');
         const safeDropzoneMinHeight = computed(() => props.content?.dropzoneMinHeight || '120px');
-        const safeDropzoneBackground = computed(() => props.content?.dropzoneBackground || 'rgba(0, 0, 0, 0.01)');
+        const safeDropzoneBackground = computed(() => props.content?.dropzoneBackground || 'rgba(0, 0, 0, 0)');
+        const safeDropzoneBackgroundHover = computed(
+            () => props.content?.dropzoneBackgroundHover || 'rgba(0, 0, 0, 0.01)'
+        );
         const safeLabelFontSize = computed(() => props.content?.labelFontSize || '16px');
         const safeLabelFontFamily = computed(() => props.content?.labelFontFamily || 'inherit');
         const safeLabelFontWeight = computed(() => props.content?.labelFontWeight || 'normal');
@@ -227,20 +229,44 @@ export default {
             name: 'value',
             defaultValue: [],
             type: 'file',
-            resettable: true,
+            componentType: 'element',
         });
 
-        // wwLib.wwVariable.useComponentVariable({
-        //     uid: props.uid,
-        //     name: 'progress',
-        //     defaultValue: 0,
-        //     componentType: 'element',
-        //     type: 'number',
-        //     readonly: true,
-        // });
+        const { value: status, setValue: setStatus } = wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'status',
+            defaultValue: {},
+            type: 'any',
+        });
 
         const fileList = computed(() => (Array.isArray(files.value) ? files.value : []));
         const hasFiles = computed(() => fileList.value.length > 0);
+
+        watch([status, fileList], ([newStatus, newFiles]) => {
+            if (newStatus && typeof newStatus === 'object') {
+                const fileNames = newFiles.map(file => file.name);
+                const updatedStatus = Object.fromEntries(
+                    Object.entries(newStatus).filter(([key]) => fileNames.includes(key))
+                );
+
+                if (Object.keys(updatedStatus).length !== Object.keys(newStatus).length) {
+                    setStatus(updatedStatus);
+                }
+            }
+        });
+
+        const getFileStatus = file => {
+            if (!status.value || !file.name || !status.value[file.name]) {
+                return {
+                    uploadProgress: 0,
+                    isUploading: false,
+                    isUploaded: false,
+                };
+            }
+
+            return status.value[file.name];
+        };
+
         const acceptedFileTypes = computed(() => {
             switch (extensions.value) {
                 case 'image':
@@ -299,31 +325,26 @@ export default {
                 value: fileList,
                 isUploading: computed(() => {
                     if (!fileList.value.length) return false;
-                    return fileList.value.some(file => file.isUploading);
+                    return fileList.value.some(file => getFileStatus(file).isUploading);
                 }),
                 uploadProgress: computed(() => {
                     if (!fileList.value.length) return 0;
-                    const sum = fileList.value.reduce((total, file) => total + (file.uploadProgress || 0), 0);
+                    const sum = fileList.value.reduce((total, file) => {
+                        const fileStatus = getFileStatus(file);
+                        return total + (fileStatus.uploadProgress || 0);
+                    }, 0);
                     return Math.round(sum / fileList.value.length);
                 }),
                 isUploaded: computed(() => {
                     if (!fileList.value.length) return false;
-                    return fileList.value.every(file => file.isUploaded);
+                    return fileList.value.every(file => getFileStatus(file).isUploaded);
                 }),
             },
         });
 
-        // Watch for changes in base64/binary exposure to notify users when settings change with existing files
-        watch(
-            [exposeBase64, exposeBinary],
-            async ([newExposeBase64, newExposeBinary], [oldExposeBase64, oldExposeBinary]) => {
-                const base64Changed = newExposeBase64 && !oldExposeBase64;
-                const binaryChanged = newExposeBinary && !oldExposeBinary;
-            }
-        );
-
         provide('_wwFileUpload', {
             files: fileList,
+            status: status,
             acceptedTypes: acceptedFileTypes,
             isDisabled,
             isReadonly,
@@ -406,7 +427,6 @@ export default {
                 setFiles([]);
             }
 
-            // Check file count limit for multi mode
             let availableSlots = Infinity;
             if (type.value === 'multi' && maxFiles.value > 0) {
                 availableSlots = maxFiles.value - files.value.length;
@@ -463,7 +483,6 @@ export default {
                 });
 
                 if (validationResult.valid) {
-                    processingQueue.value.push(file);
                     const fileDetails = await getFileDetails(file);
 
                     // Add unique ID for stable transitions
@@ -479,8 +498,7 @@ export default {
                         Object.assign(fileDetails, processedData);
                     }
 
-                    processedFiles.push(fileDetails);
-                    processingQueue.value = processingQueue.value.filter(f => f !== file);
+                    processedFiles.push(file);
                 } else {
                     console.warn(`File validation failed: ${validationResult.reason}`);
                     emit('trigger-event', {
@@ -497,10 +515,12 @@ export default {
                         },
                     });
 
+                    /* wwEditor:start */
                     wwLib.wwNotification.open({
                         text: { en: validationResult.reason },
                         color: 'error',
                     });
+                    /* wwEditor:end */
                 }
             }
 
@@ -574,27 +594,6 @@ export default {
             });
         };
 
-        const updateFileProperty = (fileIndex, property, value) => {
-            if (fileIndex < 0 || fileIndex >= files.value.length) return;
-
-            const updatedFiles = [...files.value];
-            updatedFiles[fileIndex] = {
-                ...updatedFiles[fileIndex],
-                [property]: value,
-            };
-
-            setFiles(updatedFiles);
-        };
-
-        const actionUpdateProgress = (fileIndex, progress) => {
-            updateFileProperty(fileIndex, 'uploadProgress', progress);
-        };
-
-        const actionUpdateUploadStatus = (fileIndex, isUploading, isUploaded) => {
-            updateFileProperty(fileIndex, 'isUploading', isUploading);
-            updateFileProperty(fileIndex, 'isUploaded', isUploaded);
-        };
-
         const getAllowedTypesLabel = () => {
             switch (extensions.value) {
                 case 'image':
@@ -625,58 +624,6 @@ export default {
                 description: 'Clear all files',
                 method: clearFiles,
                 editor: { label: 'Clear Files', group: 'File Upload', icon: 'trash' },
-            },
-            updateProgress: {
-                description: 'Update the progress of the upload',
-                method: actionUpdateProgress,
-                editor: {
-                    label: 'Update Progress',
-                    group: 'File Upload',
-                    icon: 'workflow',
-                    args: [
-                        {
-                            name: 'fileIndex',
-                            type: 'number',
-                            description: 'The index of the file to update the progress for',
-                            required: true,
-                        },
-                        {
-                            name: 'progress',
-                            type: 'number',
-                            description: 'The progress of the upload',
-                            required: true,
-                        },
-                    ],
-                },
-            },
-            updateUploadStatus: {
-                description: 'Update the upload status of the file',
-                method: actionUpdateUploadStatus,
-                editor: {
-                    label: 'Update Upload Status',
-                    group: 'File Upload',
-                    icon: 'workflow',
-                    args: [
-                        {
-                            name: 'fileIndex',
-                            type: 'number',
-                            description: 'The index of the file to update the upload status for',
-                            required: true,
-                        },
-                        {
-                            name: 'isUploading',
-                            type: 'boolean',
-                            description: 'Whether the file is uploading',
-                            required: true,
-                        },
-                        {
-                            name: 'isUploaded',
-                            type: 'boolean',
-                            description: 'Whether the file is uploaded',
-                            required: true,
-                        },
-                    ],
-                },
             },
         });
 
@@ -710,6 +657,7 @@ export default {
         const handleMouseMove = animationHandleMouseMove;
 
         return {
+            status,
             fileInput,
             isDragging,
             fileList,
@@ -762,6 +710,7 @@ export default {
             safeDropzonePadding,
             safeDropzoneMinHeight,
             safeDropzoneBackground,
+            safeDropzoneBackgroundHover,
             safeLabelFontSize,
             safeLabelFontFamily,
             safeLabelFontWeight,
@@ -807,6 +756,7 @@ export default {
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        background-color: v-bind('safeDropzoneBackground');
         border: v-bind('safeDropzoneBorderWidth') v-bind('safeDropzoneBorderStyle') v-bind('safeDropzoneBorderColor');
         border-radius: v-bind('safeDropzoneBorderRadius');
         padding: v-bind('safeDropzonePadding');
@@ -817,7 +767,7 @@ export default {
 
         &:hover {
             border-color: v-bind('safeDropzoneBorderColor');
-            background-color: v-bind('safeDropzoneBackground');
+            background-color: v-bind('safeDropzoneBackgroundHover');
         }
     }
 
