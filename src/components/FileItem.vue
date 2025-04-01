@@ -105,7 +105,6 @@ export default {
         const actionButtonStyles = computed(() => ({
             width: content.value?.actionButtonSize || '28px',
             height: content.value?.actionButtonSize || '28px',
-            backgroundColor: content.value?.actionButtonBackground || '#fff',
             color: content.value?.actionButtonColor || '#666',
             borderRadius: content.value?.actionButtonBorderRadius || '4px',
             margin: content.value?.actionButtonMargin || '0 0 0 4px',
@@ -225,19 +224,14 @@ export default {
         &:hover:not(:disabled) {
             border-color: v-bind(
                 'content?.actionButtonHoverBorderColor || content?.fileItemHoverBorderColor || "#ddd"'
-            );
-            background-color: v-bind('content?.actionButtonHoverBackground || "#f8f8f8"');
+            ) !important;
+            background-color: v-bind('content?.actionButtonHoverBackground || "#f8f8f8"') !important;
             transform: scale(1.05);
         }
 
         &:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-        }
-
-        &--remove:hover:not(:disabled) {
-            color: v-bind('content?.actionButtonRemoveHoverColor || content?.progressBarColor || "#999"');
-            border-color: v-bind('content?.actionButtonRemoveHoverColor || content?.progressBarColor || "#999"');
         }
     }
 

@@ -81,7 +81,6 @@ Style Properties:
 -   `actionButtonColor`: `string` - Color for remove buttons. Default: `'#666666'`
 -   `actionButtonBorderColor`: `string` - Border color for remove buttons. Default: `'#EEEEEE'`
 -   `actionButtonHoverBorderColor`: `string` - Border color for remove buttons on hover. Default: `'#DDDDDD'`
--   `actionButtonRemoveHoverColor`: `string` - Color for remove button on hover. Default: `'#999999'`
 -   `actionButtonBorderRadius`: `string` - Border radius for remove buttons. Default: `'4px'`
 -   `actionButtonMargin`: `string` - Margin for remove buttons. Default: `'0 0 0 4px'`
 
