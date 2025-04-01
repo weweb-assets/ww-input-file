@@ -81,12 +81,9 @@ export default {
         const showFileInfo = computed(() => content.value?.showFileInfo);
 
         const fileItemStyles = computed(() => ({
-            backgroundColor: content.value?.fileItemBackground || '#fff',
-            borderColor: content.value?.fileItemBorderColor || '#eee',
-            borderRadius: content.value?.fileItemBorderRadius || '6px',
             padding: content.value?.fileItemPadding || '12px',
+            borderRadius: content.value?.fileItemBorderRadius || '6px',
             margin: content.value?.fileItemMargin || '0 0 8px 0',
-            boxShadow: content.value?.fileItemShadow || '0 2px 4px rgba(0, 0, 0, 0.05)',
             position: 'relative',
             overflow: 'hidden',
         }));
@@ -147,6 +144,7 @@ export default {
     border-radius: v-bind('content?.fileItemBorderRadius || "6px"');
     margin-bottom: v-bind('(content?.fileItemMargin || "0 0 8px 0").split(" ")[2] || "8px"');
     background-color: v-bind('content?.fileItemBackground || "#fff"');
+    box-shadow: v-bind('content?.fileItemShadow || "0 2px 4px rgba(0, 0, 0, 0.05)"');
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     transform-origin: center;
     position: relative;
@@ -154,6 +152,14 @@ export default {
     backface-visibility: hidden;
     will-change: transform, opacity;
     overflow: hidden;
+
+    &:hover {
+        border-color: v-bind('content?.fileItemHoverBorderColor || content?.fileItemBorderColor || "#ddd"');
+        background-color: v-bind('content?.fileItemHoverBackground || content?.fileItemBackground || "#fff"');
+        box-shadow: v-bind(
+            'content?.fileItemHoverShadow || content?.fileItemShadow || "0 2px 4px rgba(0, 0, 0, 0.05)"'
+        );
+    }
 
     &__progress {
         position: absolute;
@@ -163,14 +169,6 @@ export default {
         z-index: 0;
         transition: width 1.2s ease;
         opacity: 0.2;
-    }
-
-    &:hover {
-        border-color: v-bind('content?.fileItemHoverBorderColor || content?.fileItemBorderColor || "#ddd"');
-        background-color: v-bind('content?.fileItemHoverBackground || content?.fileItemBackground || "#fff"');
-        box-shadow: v-bind(
-            'content?.fileItemHoverShadow || content?.fileItemShadow || "0 2px 4px rgba(0, 0, 0, 0.05)"'
-        );
     }
 
     &--disabled {
@@ -210,10 +208,6 @@ export default {
         z-index: 1;
     }
 
-    &:hover &__actions {
-        opacity: 1;
-    }
-
     &__btn {
         display: flex;
         align-items: center;
@@ -245,6 +239,10 @@ export default {
             color: v-bind('content?.actionButtonRemoveHoverColor || content?.progressBarColor || "#999"');
             border-color: v-bind('content?.actionButtonRemoveHoverColor || content?.progressBarColor || "#999"');
         }
+    }
+
+    &:hover &__actions {
+        opacity: 1;
     }
 }
 </style>

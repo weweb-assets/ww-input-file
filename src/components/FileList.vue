@@ -65,7 +65,6 @@ export default {
     display: flex;
     flex-direction: column;
     width: 100%;
-    overflow: hidden;
 
     &__inner {
         position: relative;

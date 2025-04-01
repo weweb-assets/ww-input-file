@@ -63,6 +63,7 @@ Style Properties:
 -   `fileItemPadding`: `string` - Padding for file items. Default: `'12px'`
 -   `fileItemMargin`: `string` - Margin for file items. Default: `'0 0 8px 0'`
 -   `fileItemShadow`: `string` - Shadow for file items. Default: `'0 2px 4px rgba(0, 0, 0, 0.05)'`
+-   `progressBarColor`: `string` - Color for the progress bar. Default: `'#4CAF50'`
 -   `fileItemHoverBorderColor`: `string` - Border color for file items on hover. Default: `'#DDDDDD'`
 -   `fileItemHoverBackground`: `string` - Background color for file items on hover. Default: `'#FFFFFF'`
 -   `fileItemHoverShadow`: `string` - Shadow for file items on hover. Default: `'0 2px 4px rgba(0, 0, 0, 0.05)'`
@@ -74,16 +75,15 @@ Style Properties:
 -   `fileDetailsFontSize`: `string` - Font size for file details. Default: `'12px'`
 -   `fileDetailsFontWeight`: `string` - Font weight for file details. Default: `'normal'`
 -   `fileDetailsColor`: `string` - Color for file details. Default: `'#888888'`
--   `actionButtonSize`: `string` - Size for action buttons. Default: `'28px'`
--   `actionButtonBackground`: `string` - Background color for action buttons. Default: `'#FFFFFF'`
--   `actionButtonHoverBackground`: `string` - Background color for action buttons on hover. Default: `'#F8F8F8'`
--   `actionButtonColor`: `string` - Color for action buttons. Default: `'#666666'`
--   `actionButtonBorderColor`: `string` - Border color for action buttons. Default: `'#EEEEEE'`
--   `actionButtonHoverBorderColor`: `string` - Border color for action buttons on hover. Default: `'#DDDDDD'`
+-   `actionButtonSize`: `string` - Size for remove buttons. Default: `'28px'`
+-   `actionButtonBackground`: `string` - Background color for remove buttons. Default: `'#FFFFFF'`
+-   `actionButtonHoverBackground`: `string` - Background color for remove buttons on hover. Default: `'#F8F8F8'`
+-   `actionButtonColor`: `string` - Color for remove buttons. Default: `'#666666'`
+-   `actionButtonBorderColor`: `string` - Border color for remove buttons. Default: `'#EEEEEE'`
+-   `actionButtonHoverBorderColor`: `string` - Border color for remove buttons on hover. Default: `'#DDDDDD'`
 -   `actionButtonRemoveHoverColor`: `string` - Color for remove button on hover. Default: `'#999999'`
--   `actionButtonBorderRadius`: `string` - Border radius for action buttons. Default: `'4px'`
--   `actionButtonMargin`: `string` - Margin for action buttons. Default: `'0 0 0 4px'`
--   `progressBarColor`: `string` - Color for the progress bar. Default: `'#4CAF50'`
+-   `actionButtonBorderRadius`: `string` - Border radius for remove buttons. Default: `'4px'`
+-   `actionButtonMargin`: `string` - Margin for remove buttons. Default: `'0 0 0 4px'`
 
 Animation Properties:
 
