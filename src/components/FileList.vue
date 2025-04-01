@@ -69,10 +69,7 @@ export default {
     &__inner {
         position: relative;
         min-height: 0;
-        transition-property: height, opacity;
-        transition-duration: 0.5s;
-        transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
-        will-change: height, opacity, transform;
+        will-change: transform;
     }
 }
 
@@ -87,12 +84,13 @@ export default {
 }
 
 .file-list-transition-move {
-    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .file-list-transition-leave-active {
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: absolute;
     width: 100%;
+    opacity: 0;
 }
 </style>

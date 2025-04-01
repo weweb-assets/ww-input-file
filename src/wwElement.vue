@@ -83,7 +83,7 @@
 import { ref, computed, watch, provide, inject } from 'vue';
 import FileList from './components/FileList.vue';
 import { validateFile } from './utils/fileValidation';
-import { getFileDetails, processFileForExport } from './utils/fileProcessing';
+import { fileToBase64, fileToBinary } from './utils/fileProcessing';
 import { useDragAnimation } from './composables/useDragAnimation';
 
 /* wwEditor:start */
@@ -500,21 +500,10 @@ export default {
                 });
 
                 if (validationResult.valid) {
-                    const fileDetails = await getFileDetails(file);
-
-                    // Add unique ID for stable transitions
-                    fileDetails.id = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-                    // Process base64 or binary data if needed
-                    if (exposeBase64.value || exposeBinary.value) {
-                        const processedData = await processFileForExport(file, {
-                            base64: exposeBase64.value,
-                            binary: exposeBinary.value,
-                        });
-
-                        Object.assign(fileDetails, processedData);
-                    }
-
+                    file.id = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                    file.mimeType = file.type;
+                    if (exposeBase64.value) file.base64 = await fileToBase64(file);
+                    if (exposeBinary.value) file.binary = await fileToBinary(file);
                     processedFiles.push(file);
                 } else {
                     console.warn(`File validation failed: ${validationResult.reason}`);
