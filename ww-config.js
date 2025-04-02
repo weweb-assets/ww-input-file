@@ -82,6 +82,7 @@ export default {
                 'fileItemMargin',
                 'fileItemShadow',
                 'progressBarColor',
+                'progressBarColorWarning',
                 'fileItemHoverTitle',
                 'fileItemHoverBorderColor',
                 'fileItemHoverBackground',
@@ -929,7 +930,7 @@ export default {
             responsive: true,
             bindable: true,
         },
-        info: {
+        progressBarColorWarning: {
             type: 'InfoBox',
             options: {
                 variant: 'warning',
