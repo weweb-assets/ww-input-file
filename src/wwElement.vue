@@ -193,6 +193,10 @@ export default {
             }
         });
 
+        const safeDropzoneBackgroundDragging = computed(
+            () => props.content?.dropzoneBackgroundDragging || 'rgba(0, 0, 0, 0.05)'
+        );
+
         // Extensions message styling
         const extensionsMessageStyle = computed(() => ({
             fontFamily: props.content?.extensionsMessageFontFamily || 'inherit',
@@ -716,6 +720,7 @@ export default {
             safeDropzoneMinHeight,
             safeDropzoneBackground,
             safeDropzoneBackgroundHover,
+            safeDropzoneBackgroundDragging,
             safeLabelFontSize,
             safeLabelFontFamily,
             safeLabelFontWeight,
@@ -852,8 +857,7 @@ export default {
 
     &--dragging {
         .ww-file-upload__dropzone {
-            border-color: v-bind('safeProgressBarColor');
-            background-color: v-bind('safeProgressBarBackground');
+            background-color: v-bind('safeDropzoneBackgroundDragging');
         }
     }
 
