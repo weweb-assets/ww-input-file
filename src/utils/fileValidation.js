@@ -1,6 +1,7 @@
 export function validateFile(file, options = {}) {
     const { maxFileSize, minFileSize, maxTotalFileSize, currentTotalSize = 0, acceptedTypes = '' } = options;
     const fileSizeInMB = file.size / (1024 * 1024);
+    const currentTotalSizeInMB = currentTotalSize / (1024 * 1024);
 
     if (minFileSize && fileSizeInMB < minFileSize) {
         return {
@@ -22,18 +23,18 @@ export function validateFile(file, options = {}) {
         };
     }
 
-    if (maxTotalFileSize && currentTotalSize + fileSizeInMB > maxTotalFileSize) {
+    if (maxTotalFileSize && currentTotalSizeInMB + fileSizeInMB > maxTotalFileSize) {
         return {
             valid: false,
-            reason: `Total file size (${(currentTotalSize + fileSizeInMB).toFixed(
+            reason: `Total file size (${(currentTotalSizeInMB + fileSizeInMB).toFixed(
                 2
             )} MB) would exceed the maximum allowed (${maxTotalFileSize} MB)`,
             constraint: 'MAX_TOTAL_SIZE',
             details: {
                 maxTotalSize: maxTotalFileSize,
-                currentTotalSize: currentTotalSize,
+                currentTotalSize: currentTotalSizeInMB,
                 newFileSize: fileSizeInMB,
-                resultingTotalSize: currentTotalSize + fileSizeInMB,
+                resultingTotalSize: currentTotalSizeInMB + fileSizeInMB,
             },
         };
     }

@@ -4,19 +4,23 @@ export default {
         icon: 'upload',
         bubble: { icon: 'upload' },
         customSettingsPropertiesOrder: [
-            'type',
-            'reorder',
-            'drop',
-            'maxFileSize',
-            'minFileSize',
-            'maxTotalFileSize',
-            'maxFiles',
-            'required',
-            'readonly',
-            'extensions',
-            'customExtensions',
-            'exposeBase64',
-            'exposeBinary',
+            // UX properties
+            ['formInfobox', 'fieldName', 'customValidation', 'validation'],
+            [
+                'type',
+                'reorder',
+                'drop',
+                'maxFileSize',
+                'minFileSize',
+                'maxTotalFileSize',
+                'maxFiles',
+                'required',
+                'readonly',
+                'extensions',
+                'customExtensions',
+                'exposeBase64',
+                'exposeBinary',
+            ],
         ],
         customStylePropertiesOrder: [
             // Dropzone properties
@@ -76,11 +80,11 @@ export default {
                 'fileItemPadding',
                 'fileItemMargin',
                 'fileItemShadow',
+                'progressBarColor',
                 'fileItemHoverTitle',
                 'fileItemHoverBorderColor',
                 'fileItemHoverBackground',
                 'fileItemHoverShadow',
-                'progressBarColor',
             ],
             // File details properties
             [
@@ -105,7 +109,6 @@ export default {
                 'actionButtonColor',
                 'actionButtonBorderColor',
                 'actionButtonHoverBorderColor',
-                'actionButtonRemoveHoverColor',
                 'actionButtonBorderRadius',
                 'actionButtonMargin',
             ],
@@ -119,6 +122,21 @@ export default {
                 'animationSpeed',
             ],
         ],
+        hint: (_, sidePanelContent) => {
+            if (!sidePanelContent.parentSelection) return null;
+            const { header, text, button, args } = sidePanelContent.parentSelection;
+            const sections = ['style', 'settings'];
+            return sections.map(section => ({
+                section,
+                header: header,
+                text: text,
+                button: {
+                    text: button,
+                    action: 'selectParent',
+                    args,
+                },
+            }));
+        },
     },
     options: {
         displayAllowedValues: ['flex', 'inline-flex', 'block'],
@@ -1057,7 +1075,7 @@ export default {
         // ======== ACTION BUTTON PROPERTIES ========
         actionButtonsTitle: {
             type: 'Title',
-            label: { en: 'Action Buttons' },
+            label: { en: 'Remove Buttons' },
             section: 'style',
         },
         actionButtonSize: {
@@ -1122,16 +1140,6 @@ export default {
             type: 'Color',
             section: 'style',
             defaultValue: '#DDDDDD',
-            classes: true,
-            states: true,
-            responsive: true,
-            bindable: true,
-        },
-        actionButtonRemoveHoverColor: {
-            label: { en: 'Remove button hover color' },
-            type: 'Color',
-            section: 'style',
-            defaultValue: '#999999',
             classes: true,
             states: true,
             responsive: true,
@@ -1244,6 +1252,61 @@ export default {
                     'Controls the speed of the drag and drop animation (0.5 = half speed, 1 = normal, 2 = double speed)',
             },
             /* wwEditor:end */
+        },
+        // FORM PROPERTIES: Mainly used in the sidepanel for UX purposes
+        /* wwEditor:start */
+        parentSelection: {
+            editorOnly: true,
+            defaultValue: false,
+        },
+        /* wwEditor:end */
+        /* wwEditor:start */
+        form: {
+            editorOnly: true,
+            hidden: true,
+            defaultValue: false,
+        },
+        formInfobox: {
+            type: 'InfoBox',
+            section: 'settings',
+            options: (_, sidePanelContent) => ({
+                variant: sidePanelContent.form?.name ? 'success' : 'warning',
+                icon: 'pencil',
+                title: sidePanelContent.form?.name || 'Unnamed form',
+                content: !sidePanelContent.form?.name && 'Give your form a meaningful name.',
+            }),
+            hidden: (_, sidePanelContent) => !sidePanelContent.form?.uid,
+        },
+        /* wwEditor:end */
+        fieldName: {
+            label: 'Field name',
+            section: 'settings',
+            type: 'Text',
+            defaultValue: '',
+            bindable: true,
+            hidden: (_, sidePanelContent) => {
+                return !sidePanelContent.form?.uid;
+            },
+        },
+        customValidation: {
+            label: 'Custom validation',
+            section: 'settings',
+            type: 'OnOff',
+            defaultValue: false,
+            bindable: true,
+            hidden: (_, sidePanelContent) => {
+                return !sidePanelContent.form?.uid;
+            },
+        },
+        validation: {
+            label: 'Validation',
+            section: 'settings',
+            type: 'Formula',
+            defaultValue: '',
+            bindable: true,
+            hidden: (content, sidePanelContent) => {
+                return !sidePanelContent.form?.uid || !content.customValidation;
+            },
         },
     },
 };

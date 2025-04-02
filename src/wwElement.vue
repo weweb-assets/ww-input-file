@@ -30,9 +30,7 @@
             ></div>
 
             <div class="ww-file-upload__content" :class="[`ww-file-upload__content--${uploadIconPosition}`]">
-                <div v-if="showUploadIcon" class="ww-file-upload__icon" :style="iconStyle">
-                    <div v-html="iconHTML"></div>
-                </div>
+                <div v-if="showUploadIcon" class="ww-file-upload__icon" v-html="iconHTML" />
                 <div class="ww-file-upload__text">
                     <div class="ww-file-upload__label" :style="labelMessageStyle">{{ labelMessage }}</div>
                     <div
@@ -82,11 +80,15 @@
 </template>
 
 <script>
-import { ref, computed, watch, provide, nextTick } from 'vue';
+import { ref, computed, watch, provide, inject } from 'vue';
 import FileList from './components/FileList.vue';
 import { validateFile } from './utils/fileValidation';
-import { getFileDetails, processFileForExport } from './utils/fileProcessing';
+import { fileToBase64, fileToBinary } from './utils/fileProcessing';
 import { useDragAnimation } from './composables/useDragAnimation';
+
+/* wwEditor:start */
+import useParentSelection from './editor/useParentSelection';
+/* wwEditor:end */
 
 export default {
     components: {
@@ -95,7 +97,9 @@ export default {
     props: {
         content: { type: Object, required: true },
         /* wwEditor:start */
+        wwFrontState: { type: Object, required: true },
         wwEditorState: { type: Object, required: true },
+        parentSelection: { type: Object, default: () => ({ allow: false, texts: {} }) },
         /* wwEditor:end */
         uid: { type: String, required: true },
         wwElementState: { type: Object, required: true },
@@ -109,6 +113,10 @@ export default {
             // eslint-disable-next-line no-unreachable
             return false;
         });
+
+        /* wwEditor:start */
+        const { selectParentElement } = useParentSelection(props, emit);
+        /* wwEditor:end */
 
         const { getIcon } = wwLib.useIcons();
 
@@ -239,6 +247,17 @@ export default {
             type: 'any',
         });
 
+        const useForm = inject('_wwForm:useForm', () => {});
+        const fieldName = computed(() => props.content.fieldName);
+        const validation = computed(() => props.content.validation);
+        const customValidation = computed(() => props.content.customValidation);
+
+        useForm(
+            files,
+            { fieldName, validation, customValidation, required },
+            { elementState: props.wwElementState, emit, sidepanelFormPath: 'form', setValue: setFiles }
+        );
+
         const fileList = computed(() => (Array.isArray(files.value) ? files.value : []));
         const hasFiles = computed(() => fileList.value.length > 0);
 
@@ -317,8 +336,6 @@ export default {
             /* wwEditor:end */
             return iconText.value;
         });
-
-        const iconStyle = computed(() => ({ color: uploadIconColor.value }));
 
         const localData = ref({
             fileUpload: {
@@ -483,21 +500,10 @@ export default {
                 });
 
                 if (validationResult.valid) {
-                    const fileDetails = await getFileDetails(file);
-
-                    // Add unique ID for stable transitions
-                    fileDetails.id = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-                    // Process base64 or binary data if needed
-                    if (exposeBase64.value || exposeBinary.value) {
-                        const processedData = await processFileForExport(file, {
-                            base64: exposeBase64.value,
-                            binary: exposeBinary.value,
-                        });
-
-                        Object.assign(fileDetails, processedData);
-                    }
-
+                    file.id = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                    file.mimeType = file.type;
+                    if (exposeBase64.value) file.base64 = await fileToBase64(file);
+                    if (exposeBinary.value) file.binary = await fileToBinary(file);
                     processedFiles.push(file);
                 } else {
                     console.warn(`File validation failed: ${validationResult.reason}`);
@@ -676,7 +682,6 @@ export default {
             reorderFiles,
             getAllowedTypesLabel,
             iconHTML,
-            iconStyle,
             uploadIconPosition,
             handleMouseMove,
             extensionsMessageStyle,
@@ -729,6 +734,10 @@ export default {
             isAnimating,
             isProcessing,
             isEditing,
+
+            /* wwEditor:start */
+            selectParentElement,
+            /* wwEditor:end */
         };
     },
 };
@@ -742,11 +751,18 @@ export default {
     position: relative;
 
     &__input {
-        position: absolute;
-        width: 0;
-        height: 0;
         opacity: 0;
-        pointer-events: none;
+        background: rgba(0, 0, 0, 0);
+        border: 0;
+        bottom: -1px;
+        font-size: 0;
+        height: 1px;
+        left: 0;
+        outline: none;
+        padding: 0;
+        position: absolute;
+        right: 0;
+        width: 100%;
     }
 
     &__dropzone {
@@ -814,6 +830,7 @@ export default {
 
     &__icon {
         font-size: v-bind('uploadIconSize');
+        color: v-bind('uploadIconColor');
         width: 1em;
         height: 1em;
         display: flex;
@@ -821,22 +838,7 @@ export default {
         align-items: center;
         flex-shrink: 0;
         pointer-events: none;
-
-        .ww-file-upload__content--top & {
-            margin-bottom: v-bind('uploadIconMargin');
-        }
-
-        .ww-file-upload__content--right & {
-            margin-left: v-bind('uploadIconMargin');
-        }
-
-        .ww-file-upload__content--bottom & {
-            margin-top: v-bind('uploadIconMargin');
-        }
-
-        .ww-file-upload__content--left & {
-            margin-right: v-bind('uploadIconMargin');
-        }
+        margin: v-bind('uploadIconMargin');
 
         > :deep(svg) {
             width: 100%;
