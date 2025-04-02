@@ -347,6 +347,10 @@ export default {
                 type: 'boolean',
                 tooltip: 'A boolean that defines if files should be exposed as Base64: `true | false`',
             },
+            propertyHelp: {
+                tooltip:
+                    "Base64 strings can be very large, so we crop them when displayed in the editor interface. Don't worry, the variable contains the full value when it is used.",
+            },
             /* wwEditor:end */
         },
         exposeBinary: {
@@ -359,6 +363,10 @@ export default {
             bindingValidation: {
                 type: 'boolean',
                 tooltip: 'A boolean that defines if files should be exposed as Binary: `true | false`',
+            },
+            propertyHelp: {
+                tooltip:
+                    'Binary data is a special object that can be very large in size. It will appear as an empty object in the editor interface. To inspect it, you can log it to the console.',
             },
             /* wwEditor:end */
         },
