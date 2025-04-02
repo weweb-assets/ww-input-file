@@ -929,6 +929,14 @@ export default {
             responsive: true,
             bindable: true,
         },
+        info: {
+            type: 'InfoBox',
+            options: {
+                variant: 'warning',
+                content: "The progress bar is only compatible with the WeWeb's upload file action.",
+            },
+            editorOnly: true,
+        },
         fileItemHoverTitle: {
             type: 'Title',
             label: { en: 'File Item Hover States' },
