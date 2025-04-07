@@ -343,23 +343,28 @@ export default {
 
         const localData = ref({
             fileUpload: {
-                value: fileList,
-                isUploading: computed(() => {
-                    if (!fileList.value.length) return false;
-                    return fileList.value.some(file => getFileStatus(file).isUploading);
+                value: computed(() => {
+                    return fileList.value.map(file => {
+                        const plainObject = {};
+                        for (const key in file) {
+                            if (Object.prototype.hasOwnProperty.call(file, key)) {
+                                plainObject[key] = file[key];
+                            }
+                        }
+                        plainObject.name = file.name;
+                        plainObject.size = file.size;
+                        plainObject.type = file.type;
+                        plainObject.lastModified = file.lastModified;
+                        plainObject.mimeType = file.mimeType;
+                        plainObject.id = file.id;
+
+                        if (file.base64) plainObject.base64 = file.base64;
+                        if (file.binary) plainObject.binary = file.binary;
+
+                        return plainObject;
+                    });
                 }),
-                uploadProgress: computed(() => {
-                    if (!fileList.value.length) return 0;
-                    const sum = fileList.value.reduce((total, file) => {
-                        const fileStatus = getFileStatus(file);
-                        return total + (fileStatus.uploadProgress || 0);
-                    }, 0);
-                    return Math.round(sum / fileList.value.length);
-                }),
-                isUploaded: computed(() => {
-                    if (!fileList.value.length) return false;
-                    return fileList.value.every(file => getFileStatus(file).isUploaded);
-                }),
+                status: status,
             },
         });
 
@@ -739,6 +744,8 @@ export default {
             isAnimating,
             isProcessing,
             isEditing,
+
+            clearFiles,
 
             /* wwEditor:start */
             selectParentElement,
