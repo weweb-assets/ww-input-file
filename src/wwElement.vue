@@ -496,15 +496,20 @@ export default {
             // Process valid files
             const limitedFiles = filesToProcess.slice(0, availableSlots);
             const processedFiles = [];
+
+            // Only calculate currentTotalSize for multi-file mode
             const currentTotalSize =
-                files.value && Array.isArray(files.value) ? files.value.reduce((sum, f) => sum + (f.size || 0), 0) : 0;
+                type.value === 'multi' && Array.isArray(files.value)
+                    ? files.value.reduce((sum, f) => sum + (f.size || 0), 0)
+                    : 0;
 
             for (const file of limitedFiles) {
                 const validationResult = validateFile(file, {
                     maxFileSize: maxFileSize.value,
                     minFileSize: minFileSize.value,
-                    maxTotalFileSize: maxTotalFileSize.value,
-                    currentTotalSize,
+                    // Only apply maxTotalFileSize in multi-file mode
+                    maxTotalFileSize: type.value === 'multi' ? maxTotalFileSize.value : undefined,
+                    currentTotalSize: type.value === 'multi' ? currentTotalSize : 0,
                     acceptedTypes: acceptedFileTypes.value,
                 });
 
