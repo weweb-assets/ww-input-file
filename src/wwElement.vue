@@ -343,23 +343,28 @@ export default {
 
         const localData = ref({
             fileUpload: {
-                value: fileList,
-                isUploading: computed(() => {
-                    if (!fileList.value.length) return false;
-                    return fileList.value.some(file => getFileStatus(file).isUploading);
+                value: computed(() => {
+                    return fileList.value.map(file => {
+                        const plainObject = {};
+                        for (const key in file) {
+                            if (Object.prototype.hasOwnProperty.call(file, key)) {
+                                plainObject[key] = file[key];
+                            }
+                        }
+                        plainObject.name = file.name;
+                        plainObject.size = file.size;
+                        plainObject.type = file.type;
+                        plainObject.lastModified = file.lastModified;
+                        plainObject.mimeType = file.mimeType;
+                        plainObject.id = file.id;
+
+                        if (file.base64) plainObject.base64 = file.base64;
+                        if (file.binary) plainObject.binary = file.binary;
+
+                        return plainObject;
+                    });
                 }),
-                uploadProgress: computed(() => {
-                    if (!fileList.value.length) return 0;
-                    const sum = fileList.value.reduce((total, file) => {
-                        const fileStatus = getFileStatus(file);
-                        return total + (fileStatus.uploadProgress || 0);
-                    }, 0);
-                    return Math.round(sum / fileList.value.length);
-                }),
-                isUploaded: computed(() => {
-                    if (!fileList.value.length) return false;
-                    return fileList.value.every(file => getFileStatus(file).isUploaded);
-                }),
+                status: status,
             },
         });
 
@@ -491,15 +496,20 @@ export default {
             // Process valid files
             const limitedFiles = filesToProcess.slice(0, availableSlots);
             const processedFiles = [];
+
+            // Only calculate currentTotalSize for multi-file mode
             const currentTotalSize =
-                files.value && Array.isArray(files.value) ? files.value.reduce((sum, f) => sum + (f.size || 0), 0) : 0;
+                type.value === 'multi' && Array.isArray(files.value)
+                    ? files.value.reduce((sum, f) => sum + (f.size || 0), 0)
+                    : 0;
 
             for (const file of limitedFiles) {
                 const validationResult = validateFile(file, {
                     maxFileSize: maxFileSize.value,
                     minFileSize: minFileSize.value,
-                    maxTotalFileSize: maxTotalFileSize.value,
-                    currentTotalSize,
+                    // Only apply maxTotalFileSize in multi-file mode
+                    maxTotalFileSize: type.value === 'multi' ? maxTotalFileSize.value : undefined,
+                    currentTotalSize: type.value === 'multi' ? currentTotalSize : 0,
                     acceptedTypes: acceptedFileTypes.value,
                 });
 
@@ -739,6 +749,8 @@ export default {
             isAnimating,
             isProcessing,
             isEditing,
+
+            clearFiles,
 
             /* wwEditor:start */
             selectParentElement,

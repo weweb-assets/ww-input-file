@@ -167,7 +167,7 @@ export default {
     actions: [
         {
             label: { en: 'Clear Files' },
-            action: 'actionClearFiles',
+            action: 'clearFiles',
             args: [],
         },
     ],

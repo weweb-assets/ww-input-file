@@ -23,7 +23,7 @@ export function validateFile(file, options = {}) {
         };
     }
 
-    if (maxTotalFileSize && currentTotalSizeInMB + fileSizeInMB > maxTotalFileSize) {
+    if (maxTotalFileSize && maxTotalFileSize > 0 && currentTotalSizeInMB + fileSizeInMB > maxTotalFileSize) {
         return {
             valid: false,
             reason: `Total file size (${(currentTotalSizeInMB + fileSizeInMB).toFixed(
