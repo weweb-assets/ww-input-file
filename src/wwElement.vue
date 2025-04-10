@@ -608,10 +608,6 @@ export default {
 
         const clearFiles = () => {
             setFiles([]);
-            emit('trigger-event', {
-                name: 'change',
-                event: { value: [] },
-            });
         };
 
         const getAllowedTypesLabel = () => {
