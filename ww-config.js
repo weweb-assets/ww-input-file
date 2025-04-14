@@ -1,5 +1,6 @@
 export default {
     editor: {
+        deprecated: 'Use the input file from the Elements panel instead of this one.',
         label: 'Input File',
         icon: 'upload',
         bubble: { icon: 'upload' },
