@@ -6,8 +6,27 @@ keywords: file upload, drag and drop, multiple files, file validation, file prev
 
 #### File Upload Component
 
-Properties:
+***Purpose:***
+A feature-rich file upload component with drag-and-drop support, file validation, and extensive customization options
 
+***Features:***
+-   Interactive drag-and-drop with fluid animation effect
+-   Customizable circle animation during drag and drop operations
+-   Visual feedback during file upload with progress indicator
+-   File type filtering with multiple preset options
+-   File size validation with configurable minimum and maximum limits
+-   Total file size limit for multiple file uploads
+-   Comprehensive styling options for all component parts
+-   Support for reordering files in multi-file mode
+-   Ability to expose file contents as Base64 or binary data
+-   Responsive design that adapts to container size
+-   Accessibility support with ARIA attributes
+-   Support for single and multiple file upload modes
+-   Custom styling for hover and active states
+-   Detailed file information display
+-   Control over animation speed and appearance
+
+***Properties:***
 -   `type`: `'single' | 'multi'` - Sets the upload mode to single or multiple files. Default: `'single'`
 -   `reorder`: `boolean` - Allows reordering of files in multi-file mode. Default: `false`
 -   `drop`: `boolean` - Enables drag and drop functionality. Default: `true`
@@ -29,8 +48,7 @@ Properties:
 -   `maxFileMessage`: `string` - Message showing maximum file size. Default: `'Max file size: {maxFileSize} MB'`
 -   `showFileInfo`: `boolean` - Shows file information (size, type). Default: `true`
 
-Style Properties:
-
+***Style Properties:***
 -   `dropzoneBorderColor`: `string` - Border color for the dropzone. Default: `'#CCCCCC'`
 -   `dropzoneBorderStyle`: `'solid' | 'dashed' | 'dotted' | 'none'` - Border style for the dropzone. Default: `'dashed'`
 -   `dropzoneBorderWidth`: `string` - Border width for the dropzone. Default: `'2px'`
@@ -85,70 +103,42 @@ Style Properties:
 -   `actionButtonBorderRadius`: `string` - Border radius for remove buttons. Default: `'4px'`
 -   `actionButtonMargin`: `string` - Margin for remove buttons. Default: `'0 0 0 4px'`
 
-Animation Properties:
-
+***Animation Properties:***
 -   `enableCircleAnimation`: `boolean` - Enables circle animation during drag and drop. Default: `true`
 -   `circleSize`: `string` - Size of the animation circle. Default: `'180px'`
 -   `circleColor`: `string` - Color of the animation circle. Default: `'#EEEEEE'`
 -   `circleOpacity`: `number` - Opacity of the animation circle. Default: `0.5`
 -   `animationSpeed`: `number` - Speed of the animation. Default: `0.5`
 
-Events:
+***Events:***
+-   `change`: Triggered when files are added or removed. Payload: {value: fileArray}
+-   `initValueChange`: Triggered when initial value changes. Payload: {value: fileArray}
+-   `error`: Triggered when file validation fails. Payload: {code: errorCode, data: errorData}
 
--   `change`: {value: fileArray} - Triggered when files are added or removed
--   `initValueChange`: {value: fileArray} - Triggered when initial value changes
--   `error`: {code: errorCode, data: errorData} - Triggered when file validation fails
-
-Actions:
-
+***Exposed Element Actions:***
 -   `clearFiles`: Clears all files from the component
 -   `startUploading`: Starts the upload process for all files
 -   `updateProgress`: Updates the progress of a specific file's upload
 -   `updateUploadStatus`: Updates the upload status of a specific file
 
-Variables:
+***Exposed Variables:***
+-   `value`: array - Array of file objects with properties: (path: variables['current_element_uid-value'])
+    => `name`: string - File name
+    =>  `size`: number - File size in bytes
+    =>  `type`: string - MIME type of the file
+    =>  `extension`: string - File extension
+    =>  `base64`: string - Base64 representation of the file (if exposeBase64 is true)
+    =>  `binary`: ArrayBuffer - Binary representation of the file (if exposeBinary is true)
+    =>  `id`: string - Unique ID for the file (for stable transitions)
 
--   `value`: array - Array of file objects with properties:
+-   `status`: object - Status information for each file, with file names as keys and objects as values: (path: variables['current_element_uid-status'])
+    =>  `uploadProgress`: number - Upload progress (0-100)
+    =>  `isUploading`: boolean - Whether the file is currently uploading
+    =>  `isUploaded`: boolean - Whether the file has been uploaded
 
-    -   `name`: string - File name
-    -   `size`: number - File size in bytes
-    -   `type`: string - MIME type of the file
-    -   `extension`: string - File extension
-    -   `base64`: string - Base64 representation of the file (if exposeBase64 is true)
-    -   `binary`: ArrayBuffer - Binary representation of the file (if exposeBinary is true)
-    -   `id`: string - Unique ID for the file (for stable transitions)
-
--   `status`: object - Status information for each file, with file names as keys and objects as values:
-
-    -   `uploadProgress`: number - Upload progress (0-100)
-    -   `isUploading`: boolean - Whether the file is currently uploading
-    -   `isUploaded`: boolean - Whether the file has been uploaded
-
-Local context:
-
--   `fileUpload`: object - Local context object for element (accessible via wwElement.locals.fileUpload):
-    -   `value`: array - Reference to the file list array
-    -   `isUploading`: boolean - Whether any file is currently uploading
-    -   `uploadProgress`: number - Average upload progress of all files (0-100)
-    -   `isUploaded`: boolean - Whether all files have been uploaded
-
-Special features:
-
--   Interactive drag-and-drop with fluid animation effect
--   Customizable circle animation during drag and drop operations
--   Visual feedback during file upload with progress indicator
--   File type filtering with multiple preset options
--   File size validation with configurable minimum and maximum limits
--   Total file size limit for multiple file uploads
--   Comprehensive styling options for all component parts
--   Support for reordering files in multi-file mode
--   Ability to expose file contents as Base64 or binary data
--   Responsive design that adapts to container size
--   Accessibility support with ARIA attributes
--   Support for single and multiple file upload modes
--   Custom styling for hover and active states
--   Detailed file information display
--   Control over animation speed and appearance
-
-Full example:
-{"default":{"drop":true,"type":"multi","label":"Drop your files here or click to upload","reorder":true,"maxFiles":5,"readonly":false,"required":true,"circleSize":"180px","extensions":"any","labelColor":"#1E40AF","uploadIcon":"lucide/upload-cloud","circleColor":"#3B82F6","labelMargin":"0 0 8px 0","maxFileSize":10,"minFileSize":0,"exposeBase64":true,"exposeBinary":true,"labelMessage":"Drop files here or click to upload","showFileInfo":true,"circleOpacity":0.15,"fileNameColor":"#1E40AF","labelFontSize":"16px","animationSpeed":0.3,"fileItemMargin":"0 0 12px 0","fileItemShadow":"0 1px 3px rgba(0,0,0,0.1)","maxFileMessage":"Maximum file size: 10MB","showUploadIcon":true,"uploadIconSize":"32px","dropzonePadding":"32px","fileItemPadding":"16px","labelFontFamily":null,"labelFontWeight":"500","uploadIconColor":"#3B82F6","actionButtonSize":"32px","customExtensions":"","fileDetailsColor":"#64748B","fileNameFontSize":"14px","maxTotalFileSize":50,"progressBarColor":"#3B82F6","uploadIconMargin":"0 0 16px 0","actionButtonColor":"#3B82F6","dropzoneMinHeight":"240px","extensionsMessage":"All file types accepted","progressBarHeight":"4px","actionButtonMargin":"0 0 0 8px","dropzoneBackground":"#FFFFFF","fileItemBackground":"#F8FAFC","fileNameFontFamily":null,"fileNameFontWeight":"500","uploadIconPosition":"top","dropzoneBorderColor":"#E2E8F0","dropzoneBorderStyle":"dashed","dropzoneBorderWidth":"2px","fileDetailsFontSize":"12px","fileItemBorderColor":"#E2E8F0","fileItemHoverShadow":"0 4px 6px rgba(59, 130, 246, 0.1)","maxFileMessageColor":"#64748B","alwaysShowUploadArea":true,"dropzoneBorderRadius":"8px","fileItemBorderRadius":"6px","maxFileMessageMargin":"4px 0","enableCircleAnimation":true,"fileDetailsFontFamily":null,"fileDetailsFontWeight":"400","progressBarBackground":"rgba(59, 130, 246, 0.2)","actionButtonBackground":"#FFFFFF","extensionsMessageColor":"#64748B","labelMessageFontFamily":"inherit","actionButtonBorderColor":"#E2E8F0","dropzoneBackgroundHover":"#F8FAFC","extensionsMessageMargin":"4px 0","fileItemHoverBackground":"#F1F5F9","progressBarBorderRadius":"2px","actionButtonBorderRadius":"6px","fileItemHoverBorderColor":"#3B82F6","maxFileMessageFontFamily":"inherit","actionButtonHoverBackground":"#F1F5F9","extensionsMessageFontFamily":"inherit","actionButtonHoverBorderColor":"#3B82F6","actionButtonRemoveHoverColor":"#EF4444","dropzoneBackgroundDragging":"rgba(0, 0, 0, 0.05)"}}
+***Context data (only accessible to this element and its children): ***
+-   `context.local.data?.['fileUpload']`: object - Local context object for element:
+    =>  `value`: array - Reference to the file list array
+    =>  `isUploading`: boolean - Whether any file is currently uploading
+    =>  `uploadProgress`: number - Average upload progress of all files (0-100)
+    =>  `isUploaded`: boolean - Whether all files have been uploaded
