@@ -106,6 +106,7 @@ export default {
     },
     emits: ['trigger-event', 'add-state', 'remove-state'],
     setup(props, { emit }) {
+
         const isEditing = computed(() => {
             /* wwEditor:start */
             return props.wwEditorState?.isEditing;
