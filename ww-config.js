@@ -263,12 +263,6 @@ export default {
             },
             /* wwEditor:end */
         },
-        showFileInfo: {
-            label: { en: 'Show file details' },
-            type: 'OnOff',
-            defaultValue: true,
-            bindable: true,
-        },
         required: {
             label: { en: 'Required' },
             type: 'OnOff',
@@ -834,7 +828,6 @@ export default {
             defaultValue: '#888888',
             classes: true,
             states: true,
-            responsive: true,
             bindable: true,
         },
         maxFileMessageMargin: {
@@ -1331,7 +1324,7 @@ export default {
             section: 'settings',
             type: 'Formula',
             defaultValue: '',
-            bindable: false,
+            bindable: true,
             hidden: (content, sidePanelContent) => {
                 return !sidePanelContent.form?.uid || !content.customValidation;
             },
