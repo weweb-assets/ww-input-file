@@ -183,11 +183,13 @@ export default {
             label: { en: 'On change' },
             event: { value: [] },
             default: true,
+            description: "Run when the value changes.",
         },
         {
             name: 'initValueChange',
             label: { en: 'On init value change' },
             event: { value: [] },
+            description: "Run when the initial value changes.",
         },
         {
             name: 'error',
@@ -196,6 +198,7 @@ export default {
                 code: 'VALIDATION_ERROR',
                 data: { message: 'File validation failed' },
             },
+            description: "Run when an error occurs.",
         },
     ],
     actions: [
