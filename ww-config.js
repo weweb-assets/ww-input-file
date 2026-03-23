@@ -183,7 +183,7 @@ export default {
             label: { en: 'On change' },
             event: { value: [] },
             default: true,
-            description: "Run when the value changes.",
+            description: "Run when the value changes (when a file is uploaded)",
         },
         {
             name: 'initValueChange',
