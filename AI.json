@@ -3,7 +3,14 @@
         "name": "ww-input-file",
         "id": "a823467c-bdc7-4cec-a38c-71875c4c214a",
         "description": "A file upload component with drag-and-drop support, file type filtering, file size validation, and a built-in file list. The only valid element for file uploads in WeWeb.",
-        "keywords": ["file", "upload", "drag and drop", "file input", "image upload", "storage"],
+        "keywords": [
+            "file",
+            "upload",
+            "drag and drop",
+            "file input",
+            "image upload",
+            "storage"
+        ],
         "features": [
             "Drag-and-drop file upload zone",
             "Single or multiple file mode",
@@ -19,14 +26,28 @@
             "name": "type",
             "description": "Upload mode: 'single' for one file, 'multi' for multiple files.",
             "type": "string",
-            "enum": ["single", "multi"],
+            "enum": [
+                "single",
+                "multi"
+            ],
             "defaultValue": "single"
         },
         {
             "name": "extensions",
             "description": "Allowed file types.",
             "type": "string",
-            "enum": ["any", "image", "video", "audio", "pdf", "csv", "excel", "word", "json", "custom"],
+            "enum": [
+                "any",
+                "image",
+                "video",
+                "audio",
+                "pdf",
+                "csv",
+                "excel",
+                "word",
+                "json",
+                "custom"
+            ],
             "defaultValue": "any"
         },
         {
@@ -97,10 +118,13 @@
             "description": "Triggered when file validation fails (wrong type, size exceeded, etc.).",
             "payload": {
                 "code": "string (error code)",
-                "data": { "message": "string" }
+                "data": {
+                    "message": "string"
+                }
             }
         }
     ],
+    "states": [],
     "variables": [
         {
             "name": "value",
@@ -110,7 +134,8 @@
     ],
     "actions": [
         {
-            "name": "clearFiles",
+            "label": "Clear files",
+            "actionName": "clearFiles",
             "description": "Clears all files from the component."
         }
     ],
