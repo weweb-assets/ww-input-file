@@ -143,8 +143,8 @@
     "localContext": [],
     "specifications": [
         "This is the ONLY valid element for file uploads. Never use ww-input-basic with type 'file'.",
-        "Add a separate ww-button to trigger the upload workflow. The file upload does NOT use form submit.",
         "When calling an execute-backend-workflow action that expects a file parameter, bind the file parameter as a plain string '{elementUid}-value' — NOT a formula object. Example: {\"image\": \"a1b2c3d4-value\"}.",
+        "When inside a ww-form-container and the file is mandatory, set required: true.",
         "After a successful upload, re-fetch the relevant table view to display the newly uploaded file.",
         "Do NOT enable exposeBase64 or exposeBinary for backend upload workflows — the backend receives the raw File object via the {elementUid}-value binding."
     ],
