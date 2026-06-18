@@ -1,50 +1,33 @@
 <template>
-    <div
-        class="ww-file-upload"
-        :class="{
-            'ww-file-upload--dragging': isDragging && !isDisabled && !isReadonly,
-            'ww-file-upload--disabled': isDisabled,
-            'ww-file-upload--readonly': isReadonly,
-            'ww-file-upload--has-files': hasFiles,
-        }"
-        @dragover.prevent="handleDragOver"
-        @dragleave.prevent="handleDragLeave"
-        @drop.prevent="handleDrop"
-        role="region"
-        aria-label="File upload area"
-    >
+    <div class="ww-file-upload" :class="{
+        'ww-file-upload--dragging': isDragging && !isDisabled && !isReadonly,
+        'ww-file-upload--disabled': isDisabled,
+        'ww-file-upload--readonly': isReadonly,
+        'ww-file-upload--has-files': hasFiles,
+    }" @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave" @drop.prevent="handleDrop"
+        role="region" aria-label="File upload area">
         <!-- Main upload area -->
         <div ref="dropzoneEl" class="ww-file-upload__dropzone" @click="openFileExplorer" @mousemove="handleMouseMove">
-            <div
-                v-if="isDragging && !isDisabled && !isReadonly && enableCircleAnimation"
-                ref="circleEl"
-                class="ww-file-upload__hover-circle"
-                :style="{
+            <div v-if="isDragging && !isDisabled && !isReadonly && enableCircleAnimation" ref="circleEl"
+                class="ww-file-upload__hover-circle" :style="{
                     left: `${mouseX}px`,
                     top: `${mouseY}px`,
                     backgroundColor: circleColor,
                     opacity: circleOpacity,
                     width: circleSize,
                     height: circleSize,
-                }"
-            ></div>
+                }"></div>
 
             <div class="ww-file-upload__content" :class="[`ww-file-upload__content--${uploadIconPosition}`]">
                 <div v-if="showUploadIcon" class="ww-file-upload__icon" v-html="iconHTML" />
                 <div class="ww-file-upload__text">
                     <div class="ww-file-upload__label" :style="labelMessageStyle">{{ labelMessage }}</div>
-                    <div
-                        class="ww-file-upload__info ww-file-upload__extensions-message"
-                        v-if="extensionsMessage"
-                        :style="extensionsMessageStyle"
-                    >
+                    <div class="ww-file-upload__info ww-file-upload__extensions-message" v-if="extensionsMessage"
+                        :style="extensionsMessageStyle">
                         {{ extensionsMessage }}
                     </div>
-                    <div
-                        class="ww-file-upload__info ww-file-upload__max-file-message"
-                        v-if="maxFileMessage"
-                        :style="maxFileMessageStyle"
-                    >
+                    <div class="ww-file-upload__info ww-file-upload__max-file-message" v-if="maxFileMessage"
+                        :style="maxFileMessageStyle">
                         {{ maxFileMessage }}
                     </div>
                 </div>
@@ -52,30 +35,13 @@
         </div>
 
         <!-- File list -->
-        <FileList
-            v-if="hasFiles"
-            :files="fileList"
-            :status="status"
-            :type="type"
-            :can-reorder="reorder"
-            :is-readonly="isReadonly"
-            :is-disabled="isDisabled"
-            @remove="removeFile"
-            @reorder="reorderFiles"
-        />
+        <FileList v-if="hasFiles" :files="fileList" :status="status" :type="type" :can-reorder="reorder"
+            :is-readonly="isReadonly" :is-disabled="isDisabled" @remove="removeFile" @reorder="reorderFiles" />
 
         <!-- Hidden file input -->
-        <input
-            ref="fileInput"
-            type="file"
-            class="ww-file-upload__input"
-            :multiple="type === 'multi'"
-            :accept="acceptedFileTypes"
-            :required="required && !hasFiles"
-            :disabled="isDisabled || isReadonly"
-            :aria-label="labelMessage"
-            @change="handleFileSelection"
-        />
+        <input ref="fileInput" type="file" class="ww-file-upload__input" :multiple="type === 'multi'"
+            :accept="acceptedFileTypes" :required="required && !hasFiles" :disabled="isDisabled || isReadonly"
+            :aria-label="labelMessage" @change="handleFileSelection" />
     </div>
 </template>
 
@@ -252,7 +218,7 @@ export default {
             type: 'any',
         });
 
-        const useForm = inject('_wwForm:useForm', () => {});
+        const useForm = inject('_wwForm:useForm', () => { });
         const fieldName = computed(() => props.content.fieldName);
         const validation = computed(() => props.content.validation);
         const customValidation = computed(() => props.content.customValidation);
@@ -344,27 +310,7 @@ export default {
 
         const localData = ref({
             fileUpload: {
-                value: computed(() => {
-                    return fileList.value.map(file => {
-                        const plainObject = {};
-                        for (const key in file) {
-                            if (Object.prototype.hasOwnProperty.call(file, key)) {
-                                plainObject[key] = file[key];
-                            }
-                        }
-                        plainObject.name = file.name;
-                        plainObject.size = file.size;
-                        plainObject.type = file.type;
-                        plainObject.lastModified = file.lastModified;
-                        plainObject.mimeType = file.mimeType;
-                        plainObject.id = file.id;
-
-                        if (file.base64) plainObject.base64 = file.base64;
-                        if (file.binary) plainObject.binary = file.binary;
-
-                        return plainObject;
-                    });
-                }),
+                value: fileList,
                 status: status,
             },
         });
