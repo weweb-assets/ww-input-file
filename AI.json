@@ -151,7 +151,7 @@
     "examples": [
         {
             "description": "Standalone file upload element for image uploads, paired with an upload button.",
-            "example": "{\"uid\":\"photo_upload\",\"tag\":\"ww-input-file\",\"name\":\"Photo Upload\",\"content\":{\"default\":{\"type\":\"single\",\"extensions\":\"image\",\"maxFileSize\":10,\"labelMessage\":\"Click or drop an image here\"}}}{\"uid\":\"upload_btn\",\"tag\":\"ww-button\",\"name\":\"Upload Photo\",\"content\":{\"default\":{\"text\":\"Upload\"}}}"
+            "example": "<input-file name=\"Photo Upload\" type=\"single\" extensions=\"image\" maxFileSize={10} labelMessage=\"Click or drop an image here\"/>\n<button name=\"Upload Photo\" text=\"Upload\"/>"
         }
     ],
     "dependencies": []
